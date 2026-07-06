@@ -33,12 +33,17 @@ export function Portrait({ photo, name, caption }: PortraitProps) {
             priority
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
+          <div className="relative flex h-full w-full items-center justify-center">
+            {/* Blueprint grid so the empty frame reads as a deliberate design object. */}
+            <span className="pointer-events-none absolute inset-0 [background-image:linear-gradient(rgb(var(--c-ink)/0.05)_1px,transparent_1px),linear-gradient(90deg,rgb(var(--c-ink)/0.05)_1px,transparent_1px)] [background-size:28px_28px]" />
             <span
               aria-hidden="true"
-              className="font-display text-[6rem] font-medium tracking-tight text-line-strong"
+              className="relative font-display text-[6rem] font-medium tracking-tight text-ink/20"
             >
               {initials(name)}
+            </span>
+            <span className="absolute bottom-3 left-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-mute">
+              Portrait
             </span>
             <span className="sr-only">Portrait placeholder</span>
           </div>

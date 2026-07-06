@@ -17,11 +17,6 @@ export function About({ profile }: AboutProps) {
             {profile.about.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
-            {profile.searchStatus && (
-              <p className="border-l-2 border-accent pl-5 text-base text-ink">
-                {profile.searchStatus}
-              </p>
-            )}
           </div>
 
           <div className="md:col-span-5 md:justify-self-end">

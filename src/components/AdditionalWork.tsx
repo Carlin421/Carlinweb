@@ -20,7 +20,7 @@ export function AdditionalWork({ items }: AdditionalWorkProps) {
 
         <div className="grid gap-px border border-line bg-line md:grid-cols-2">
           {items.map((item, index) => (
-            <article key={item.title} className="flex flex-col gap-3 bg-base p-6 md:p-8">
+            <article key={index} className="flex flex-col gap-3 bg-base p-6 md:p-8">
               <div className="flex items-baseline justify-between gap-4">
                 <p className="index-label text-accent">{item.category}</p>
                 <span className="font-mono text-[11px] text-ink-mute">

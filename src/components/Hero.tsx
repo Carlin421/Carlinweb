@@ -16,12 +16,9 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
   const education = profile.education[0];
   const roleLine = profile.title.split("|")[0]?.trim() || profile.title;
 
-  const facts = [
+  const stats = [
     { label: "Projects & builds", value: String(projectCount).padStart(2, "0") },
     { label: "Internships", value: String(experienceCount).padStart(2, "0") },
-    ...(education
-      ? [{ label: education.detail, value: education.school, wide: true }]
-      : []),
   ];
 
   return (
@@ -91,28 +88,33 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
         </div>
       </div>
 
-      {/* Metadata strip */}
+      {/* Metadata strip: two peer stats on one scale, education as its own row. */}
       <div className="mx-auto max-w-6xl px-6 pb-16 md:px-8">
         <div className="rule" />
-        <dl className="grid sm:grid-cols-3">
-          {facts.map((fact, i) => (
+        <dl className="grid sm:grid-cols-2">
+          {stats.map((stat, i) => (
             <div
-              key={fact.label}
+              key={stat.label}
               className={`flex flex-col gap-1 py-6 sm:px-6 ${
                 i > 0 ? "border-t border-line sm:border-l sm:border-t-0" : "sm:pl-0"
               }`}
             >
-              <dt className="index-label text-ink-mute">{fact.label}</dt>
-              <dd
-                className={`font-display font-medium text-ink ${
-                  "wide" in fact && fact.wide ? "text-lg leading-7" : "text-3xl"
-                }`}
-              >
-                {fact.value}
-              </dd>
+              <dt className="order-2 index-label text-ink-mute">{stat.label}</dt>
+              <dd className="order-1 font-display text-3xl font-medium text-ink">{stat.value}</dd>
             </div>
           ))}
         </dl>
+        {education && (
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-line py-5">
+            <p className="index-label text-ink-mute">{education.detail}</p>
+            <p className="font-display text-lg font-medium text-ink">
+              {education.school}
+              <span className="ml-2 font-sans text-sm font-normal text-ink-dim">
+                {education.degree}
+              </span>
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

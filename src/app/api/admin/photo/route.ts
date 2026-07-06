@@ -1,8 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-import { del, list, put } from "@vercel/blob";
-import { revalidatePath } from "next/cache";
+import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 
 import { isAdminSession } from "@/lib/adminAuth";
@@ -52,39 +51,21 @@ export async function POST(request: Request) {
   try {
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       // Timestamped key so the CDN can't serve a stale portrait from an old URL.
+      // Old uploads are left in place (rare, tiny) so a Discard can't orphan the
+      // photo URL that saved content still points at.
       const blob = await put(`${BLOB_PREFIX}photo-${Date.now()}.${ext}`, file, {
         access: "public",
         addRandomSuffix: false,
         contentType: file.type,
       });
-
-      // Best-effort cleanup of older portraits; never fail the request over it.
-      try {
-        const { blobs } = await list({ prefix: BLOB_PREFIX });
-        const stale = blobs.filter((b) => b.url !== blob.url);
-        if (stale.length > 0) await del(stale.map((b) => b.url));
-      } catch {
-        // Old files linger until the next upload — harmless.
-      }
-
-      revalidatePath("/");
       return NextResponse.json({ url: blob.url });
     }
 
-    // Local dev fallback: write into public/uploads, clearing older variants.
+    // Local dev fallback: write a per-extension file. Older-extension variants
+    // are left alone so discarding an unsaved change can't delete the file the
+    // saved content still references.
     await fs.mkdir(LOCAL_DIR, { recursive: true });
-    try {
-      const entries = await fs.readdir(LOCAL_DIR);
-      await Promise.all(
-        entries
-          .filter((name) => name.startsWith("profile."))
-          .map((name) => fs.rm(path.join(LOCAL_DIR, name), { force: true }))
-      );
-    } catch {
-      // Nothing stale to remove.
-    }
     await fs.writeFile(path.join(LOCAL_DIR, `profile.${ext}`), Buffer.from(await file.arrayBuffer()));
-    revalidatePath("/");
     return NextResponse.json({ url: `/uploads/profile.${ext}` });
   } catch {
     return NextResponse.json({ error: "Upload failed. Try again." }, { status: 500 });

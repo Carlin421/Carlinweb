@@ -54,13 +54,19 @@ export function Navbar({ name, socials, resume }: NavbarProps) {
       (element): element is HTMLElement => element !== null
     );
     if (sections.length === 0 || !("IntersectionObserver" in window)) return;
+    // Track which sections are within the reading band and derive the active one
+    // deterministically as the topmost in document order — so it also clears
+    // (rather than sticking on a stale id) as sections scroll out.
+    const visible = new Set<string>();
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          if (entry.isIntersecting) visible.add(entry.target.id);
+          else visible.delete(entry.target.id);
         }
+        setActive(NAV_ITEMS.find((item) => visible.has(item.id))?.id ?? null);
       },
-      { rootMargin: "-40% 0px -55% 0px" }
+      { rootMargin: "-45% 0px -50% 0px" }
     );
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();

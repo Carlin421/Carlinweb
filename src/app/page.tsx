@@ -19,9 +19,15 @@ export default async function HomePage() {
 
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-sm focus:border focus:border-accent focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-ink"
+      >
+        Skip to content
+      </a>
       <Navbar name={content.profile.name} socials={socials} resume={content.profile.resume} />
 
-      <main>
+      <main id="main" tabIndex={-1} className="focus:outline-none">
         <Hero
           profile={content.profile}
           socials={socials}

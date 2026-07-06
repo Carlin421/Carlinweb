@@ -61,11 +61,28 @@ export function isAdminSession(): boolean {
   return verifySessionValue(cookies().get(COOKIE_NAME)?.value ?? null);
 }
 
-// In-memory login throttle. Serverless instances don't share state, so this is
-// a speed bump rather than a guarantee — the strong password is the real gate.
+// In-memory login throttle. Serverless instances don't share state and the
+// client IP can be spoofed, so this is a best-effort speed bump — the strong,
+// constant-time password check is the real gate. The map is bounded by
+// MAX_TRACKED with oldest-first eviction so a burst of unique keys can't grow
+// it without limit.
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 10;
+const MAX_TRACKED = 5000;
 const attempts = new Map<string, { count: number; resetAt: number }>();
+
+/**
+ * Best-effort client IP for throttling. Prefers the platform-set `x-real-ip`
+ * (Vercel populates it with the true edge client IP); falls back to the
+ * left-most `x-forwarded-for` value, which is client-spoofable and therefore
+ * only a courtesy for non-Vercel/local environments.
+ */
+export function clientIpForThrottle(headers: Headers): string {
+  const real = headers.get("x-real-ip")?.trim();
+  if (real) return real;
+  const forwarded = headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return forwarded || "unknown";
+}
 
 export function isLoginRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -77,12 +94,19 @@ export function isLoginRateLimited(ip: string): boolean {
 export function recordLoginFailure(ip: string): void {
   const now = Date.now();
   const entry = attempts.get(ip);
-  if (!entry || entry.resetAt <= now) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+  if (entry && entry.resetAt > now) {
+    entry.count += 1;
     return;
   }
-  entry.count += 1;
-  if (attempts.size > 1000) attempts.clear(); // unbounded-growth backstop
+  // New or expired key: enforce the cap on the insert path too (the old code
+  // only checked when incrementing, so unique-key bursts grew unbounded).
+  // Map preserves insertion order, so the first key is the oldest.
+  while (attempts.size >= MAX_TRACKED) {
+    const oldest = attempts.keys().next().value as string | undefined;
+    if (oldest === undefined) break;
+    attempts.delete(oldest);
+  }
+  attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
 }
 
 export function clearLoginFailures(ip: string): void {

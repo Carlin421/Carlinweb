@@ -18,7 +18,7 @@
   --c-surface-2: 246 244 239;
   --c-ink: 23 21 16; /* #171510 near-black */
   --c-ink-dim: 84 80 72;
-  --c-ink-mute: 139 133 122;
+  --c-ink-mute: 110 104 94; /* #6E685E — AA (>=4.5:1) on bg and surface-2 */
   --c-line: 226 222 213; /* hairline */
   --c-line-strong: 199 193 181;
   --c-accent: 214 56 30; /* #D6381E vermillion */
@@ -37,7 +37,7 @@
   --c-surface-2: 36 33 27;
   --c-ink: 243 240 232; /* #F3F0E8 warm cream */
   --c-ink-dim: 176 169 155;
-  --c-ink-mute: 128 120 107;
+  --c-ink-mute: 152 144 130; /* #988E82 — AA (>=4.5:1) on bg and surface-2 */
   --c-line: 46 42 34;
   --c-line-strong: 70 63 51;
   --c-accent: 255 90 56; /* #FF5A38 brighter vermillion */

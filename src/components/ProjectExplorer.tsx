@@ -60,8 +60,20 @@ export function ProjectExplorer({ projects, imageMap }: ProjectExplorerProps) {
     filter === "all" ? project !== featured : bucketOf(project) === filter
   );
 
+  const activeLabel = filters.find((item) => item.id === filter)?.label ?? "All";
+  const shownCount = filter === "all" ? projects.length : visible.length;
+  const statusMessage =
+    shownCount === 0
+      ? `No projects in ${activeLabel}`
+      : `Showing ${shownCount} project${shownCount === 1 ? "" : "s"}${
+          filter === "all" ? "" : ` in ${activeLabel}`
+        }`;
+
   return (
     <div>
+      <p role="status" aria-live="polite" className="sr-only">
+        {statusMessage}
+      </p>
       <div
         role="group"
         aria-label="Filter projects by area"

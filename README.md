@@ -37,7 +37,8 @@ gitignored `.content/site.json` file and image uploads go straight into
 Go to **`/admin`**, sign in with the admin password, and edit:
 
 - **Profile** — name, title, intro, availability badge, location, email,
-  GitHub/LinkedIn, about paragraphs, education, focus areas
+  GitHub/LinkedIn, about paragraphs, education, focus areas, and a **portrait
+  photo** (upload in Profile; the hero shows a monogram until you add one)
 - **Projects** — add/edit/delete/reorder projects, tags, links, featured flag,
   and upload a screenshot per project
 - **Experience / Skills / Activities** — full add/edit/delete/reorder
@@ -86,6 +87,17 @@ instructions; without a Blob token the site serves the committed defaults.
 ## Before Publishing Checklist
 
 - [ ] Set your real **email** in `/admin` → Profile (hidden on the site until set)
-- [ ] Upload your real **resume PDF** in `/admin` → Résumé
+- [ ] Upload a **portrait photo** in `/admin` → Profile (hero shows a monogram until you do)
+- [ ] Upload your real **resume PDF** in `/admin` → Résumé (a placeholder is committed)
 - [ ] Set `NEXT_PUBLIC_SITE_URL` to the real domain
 - [ ] Add project demo/repo **links** in `/admin` → Projects where available
+
+## Design Notes
+
+The visual language is deliberately **Swiss/International**: a warm-white light
+theme (with a tuned dark mode toggle), a single vermillion accent, Space Grotesk
+for display type on a strict numbered grid, hairline rules, and generous
+whitespace. It's built to look hand-designed, not templated. Accent, spacing, and
+type scale are intentionally restrained — keep new content on the same grid and
+reuse the shared primitives (`SectionHeading`, `Tag`, `ButtonLink`) so it stays
+coherent.

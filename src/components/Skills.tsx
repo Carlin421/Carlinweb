@@ -21,7 +21,7 @@ export function Skills({ skills }: SkillsProps) {
         <div className="border-t border-line">
           {skills.map((group, index) => (
             <div
-              key={group.category}
+              key={index}
               className="grid gap-x-8 gap-y-3 border-b border-line py-6 md:grid-cols-[auto_1fr] md:py-7"
             >
               <div className="flex items-baseline gap-3 md:w-56">

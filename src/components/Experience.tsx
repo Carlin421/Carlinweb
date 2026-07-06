@@ -20,7 +20,7 @@ export function Experience({ experience }: ExperienceProps) {
         <div className="border-t border-line">
           {experience.map((item, index) => (
             <article
-              key={`${item.company}-${item.date}`}
+              key={index}
               className="group grid gap-x-8 gap-y-5 border-b border-line py-8 md:grid-cols-12 md:py-10"
             >
               {/* Left rail: index + date */}

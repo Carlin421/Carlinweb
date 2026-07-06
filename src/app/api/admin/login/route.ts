@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import {
   clearLoginFailures,
+  clientIpForThrottle,
   createSessionValue,
   isAdminConfigured,
   isLoginRateLimited,
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Admin not configured." }, { status: 503 });
   }
 
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = clientIpForThrottle(request.headers);
   if (isLoginRateLimited(ip)) {
     return NextResponse.json(
       { error: "Too many attempts. Try again in a few minutes." },

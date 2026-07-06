@@ -32,21 +32,42 @@ function CardImage({ project, imageSrc, index, featured }: ProjectCardProps) {
     );
   }
 
+  // No image: an authored "spec panel" — blueprint grid, category kicker,
+  // slug, a few tech tags, and the index as a composed element (never a single
+  // lonely centered digit stretched over dead space).
   return (
     <div
       aria-hidden="true"
       className={cn(
-        "relative flex items-center justify-center overflow-hidden border-b border-line bg-surface-2",
+        "relative flex flex-col justify-between gap-6 overflow-hidden border-b border-line bg-surface-2 p-6 md:p-7",
         ratio,
         featured && "lg:border-b-0 lg:border-r"
       )}
     >
-      <span className="select-none font-display text-[6rem] font-medium leading-none text-line-strong transition-colors duration-500 group-hover:text-accent/40">
-        {String(index + 1).padStart(2, "0")}
-      </span>
-      <span className="absolute bottom-4 left-5 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-mute">
-        {project.slug}
-      </span>
+      <span className="pointer-events-none absolute inset-0 [background-image:linear-gradient(rgb(var(--c-ink)/0.045)_1px,transparent_1px),linear-gradient(90deg,rgb(var(--c-ink)/0.045)_1px,transparent_1px)] [background-size:26px_26px]" />
+      <p className="relative truncate font-mono text-[11px] uppercase tracking-[0.16em] text-accent">
+        {project.category}
+      </p>
+      <div className="relative flex items-end justify-between gap-4">
+        <div className="min-w-0">
+          <p className="truncate font-mono text-[11px] uppercase tracking-[0.2em] text-ink-mute">
+            {project.slug}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {project.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-sm border border-line px-2 py-1 font-mono text-[10px] leading-none text-ink-dim"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <span className="select-none font-display text-5xl font-medium leading-none text-line-strong transition-colors duration-500 group-hover:text-accent/40 md:text-6xl">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
     </div>
   );
 }

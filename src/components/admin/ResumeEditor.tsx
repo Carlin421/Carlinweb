@@ -36,7 +36,7 @@ export function ResumeEditor({ resume, onChange, onUnauthorized }: ResumeEditorP
         return;
       }
       onChange(data.url);
-      toast("Résumé uploaded — click Save to keep the new link in your content.");
+      toast("Résumé uploaded — click Save to make it live on the site.");
     } catch {
       toast("Upload failed — check your connection.", "error");
     } finally {
@@ -75,10 +75,9 @@ export function ResumeEditor({ resume, onChange, onUnauthorized }: ResumeEditorP
         </p>
 
         <p className="rounded-xl border border-line bg-base-2 p-4 text-xs leading-5 text-ink-mute">
-          With a Vercel Blob store connected, the upload goes live immediately and the résumé link
-          is updated for you — click Save afterwards so your edits here stay in sync. In local dev
-          without a Blob token, the file overwrites <span className="font-mono">public/resume.pdf</span>{" "}
-          directly.
+          The upload is staged into your content — click <span className="font-medium">Save</span> to
+          publish the new résumé link to the live site. In local dev without a Blob token, the file
+          overwrites <span className="font-mono">public/resume.pdf</span> directly.
         </p>
       </SectionCard>
     </div>
