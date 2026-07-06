@@ -14,8 +14,8 @@ export function AdditionalWork({ items }: AdditionalWorkProps) {
         <SectionHeading
           index="05"
           eyebrow="Activities"
-          title="Beyond the code"
-          description="Leadership, teaching, and community work — the parts of building that aren't about code."
+          title="Outside the editor"
+          description="Teaching, leadership, and community work."
         />
 
         <div className="grid gap-px border border-line bg-line md:grid-cols-2">

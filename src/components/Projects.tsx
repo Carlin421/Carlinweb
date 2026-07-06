@@ -1,6 +1,6 @@
 import type { Project } from "@/lib/siteContent";
 
-import { ProjectExplorer } from "./ProjectExplorer";
+import { ProjectShowcase } from "./ProjectShowcase";
 import { SectionHeading } from "./SectionHeading";
 
 type ProjectsProps = {
@@ -16,9 +16,9 @@ export function Projects({ projects, imageMap }: ProjectsProps) {
           index="02"
           eyebrow="Work"
           title="Selected work"
-          description="AI systems, full-stack products, and automation — built end to end, from problem to working software."
+          description={`${projects.length} projects across AI systems, full-stack, and automation. Hover a title to see it.`}
         />
-        <ProjectExplorer projects={projects} imageMap={imageMap} />
+        <ProjectShowcase projects={projects} imageMap={imageMap} />
       </div>
     </section>
   );

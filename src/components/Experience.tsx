@@ -14,7 +14,7 @@ export function Experience({ experience }: ExperienceProps) {
           index="03"
           eyebrow="Experience"
           title="Where I've worked"
-          description="Internships where prototypes met real users, real data, and real deadlines."
+          description="Software engineering internships in AI support systems and full-stack web development."
         />
 
         <div className="border-t border-line">

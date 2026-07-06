@@ -19,11 +19,11 @@ export function About({ profile }: AboutProps) {
             ))}
           </div>
 
-          <div className="md:col-span-5 md:justify-self-end">
+          <div className="md:col-span-5 md:justify-self-end md:min-w-[18rem]">
             <p className="index-label text-ink-mute">Education</p>
             <ul className="mt-5 space-y-6">
               {profile.education.map((item, index) => (
-                <li key={item.school} className="grid grid-cols-[auto_1fr] gap-4">
+                <li key={index} className="grid grid-cols-[auto_1fr] gap-4">
                   <span className="font-mono text-xs text-accent">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -39,6 +39,25 @@ export function About({ profile }: AboutProps) {
                 </li>
               ))}
             </ul>
+
+            {profile.focusAreas.length > 0 && (
+              <div className="mt-10">
+                <p className="index-label text-ink-mute">Focus</p>
+                <ul className="mt-5 space-y-3">
+                  {profile.focusAreas.map((area, index) => (
+                    <li
+                      key={index}
+                      className="grid grid-cols-[auto_1fr] gap-4 border-t border-line pt-2 text-sm text-ink-dim"
+                    >
+                      <span className="font-mono text-xs text-accent">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      {area}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

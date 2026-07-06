@@ -15,7 +15,7 @@ export function Skills({ skills }: SkillsProps) {
           index="04"
           eyebrow="Skills"
           title="Toolkit"
-          description="The languages, frameworks, and platforms behind the work above."
+          description="Languages, frameworks, and platforms I work with."
         />
 
         <div className="border-t border-line">
