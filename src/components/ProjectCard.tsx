@@ -6,7 +6,10 @@ import { ExternalLinkIcon } from "@/components/icons";
 import type { Project } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
-type ProjectCardProps = Project;
+type ProjectCardProps = Project & {
+  /** Resolved image URL (committed file or uploaded blob). Omit to render no image. */
+  imageSrc?: string;
+};
 
 export function ProjectCard({
   title,
@@ -17,32 +20,29 @@ export function ProjectCard({
   highlights,
   tags,
   links,
-  image,
+  imageAlt,
+  imageSrc,
   featured = false,
 }: ProjectCardProps) {
   return (
-    <article
-      className={cn(
-        "group overflow-hidden rounded-lg border border-warm-border bg-warm-surface shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cool-accent hover:shadow-lift",
-      )}
-    >
-      {image ? (
+    <article className="group overflow-hidden rounded-lg border border-warm-border bg-warm-surface shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cool-accent hover:shadow-lift">
+      {imageSrc ? (
         <div className="border-b border-warm-border bg-warm-surfaceMuted/45 p-4">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-md border border-warm-border bg-warm-background">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-md border border-warm-border bg-warm-background">
             <Image
-              src={image.src}
-              alt={image.alt}
-              width={900}
-              height={1273}
-              className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]"
+              src={imageSrc}
+              alt={imageAlt ?? `${title} project preview`}
+              fill
+              className="object-contain transition duration-500 group-hover:scale-[1.02]"
               sizes="(min-width: 1024px) 50vw, 100vw"
+              priority={featured}
             />
           </div>
         </div>
       ) : null}
 
       <div className={cn("p-6 md:p-8", featured && "md:p-10")}>
-        <div className={cn("grid gap-8", featured && "lg:grid-cols-[0.85fr_1.15fr]")}> 
+        <div className={cn("grid gap-8", featured && "lg:grid-cols-[0.85fr_1.15fr]")}>
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-warm-accent">
               {category}

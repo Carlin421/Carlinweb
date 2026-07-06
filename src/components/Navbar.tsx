@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { IconLink } from "@/components/IconLink";
 import { GithubIcon, LinkedinIcon, MenuIcon, XIcon } from "@/components/icons";
-import { profile } from "@/data/profile";
+import { profile, socials } from "@/data/profile";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -48,12 +48,16 @@ export function Navbar() {
           >
             Resume
           </a>
-          <IconLink href={profile.github} label="GitHub" variant="nav">
-            <GithubIcon className="h-full w-full" />
-          </IconLink>
-          <IconLink href={profile.linkedin} label="LinkedIn" variant="nav">
-            <LinkedinIcon className="h-full w-full" />
-          </IconLink>
+          {socials.github ? (
+            <IconLink href={socials.github} label="GitHub" variant="nav">
+              <GithubIcon className="h-full w-full" />
+            </IconLink>
+          ) : null}
+          {socials.linkedin ? (
+            <IconLink href={socials.linkedin} label="LinkedIn" variant="nav">
+              <LinkedinIcon className="h-full w-full" />
+            </IconLink>
+          ) : null}
         </div>
 
         <button
@@ -95,12 +99,16 @@ export function Navbar() {
             Download Resume
           </a>
           <div className="mt-3 flex gap-3">
-            <IconLink href={profile.github} label="GitHub" variant="nav" onClick={() => setOpen(false)}>
-              <GithubIcon className="h-full w-full" />
-            </IconLink>
-            <IconLink href={profile.linkedin} label="LinkedIn" variant="nav" onClick={() => setOpen(false)}>
-              <LinkedinIcon className="h-full w-full" />
-            </IconLink>
+            {socials.github ? (
+              <IconLink href={socials.github} label="GitHub" variant="nav" onClick={() => setOpen(false)}>
+                <GithubIcon className="h-full w-full" />
+              </IconLink>
+            ) : null}
+            {socials.linkedin ? (
+              <IconLink href={socials.linkedin} label="LinkedIn" variant="nav" onClick={() => setOpen(false)}>
+                <LinkedinIcon className="h-full w-full" />
+              </IconLink>
+            ) : null}
           </div>
         </div>
       </div>

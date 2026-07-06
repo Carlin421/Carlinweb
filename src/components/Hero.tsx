@@ -1,7 +1,7 @@
 import { ButtonLink } from "@/components/ButtonLink";
 import { IconLink } from "@/components/IconLink";
 import { ArrowRightIcon, FileTextIcon, GithubIcon, LinkedinIcon, SparkleIcon } from "@/components/icons";
-import { focusAreas, profile } from "@/data/profile";
+import { focusAreas, profile, socials } from "@/data/profile";
 
 const proofPoints = ["Full-stack products", "Applied AI systems", "Backend infrastructure"];
 
@@ -26,7 +26,7 @@ export function Hero() {
             {profile.title}
           </p>
           <p className="mt-6 max-w-2xl text-base leading-8 text-warm-secondary md:text-lg">
-            I build AI-assisted tools, full-stack applications, and systems that turn messy real-world workflows into usable software. My current interests include retrieval systems, backend engineering, voice interfaces, and ML infrastructure.
+            {profile.shortIntro}
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -36,12 +36,16 @@ export function Hero() {
             <ButtonLink href={profile.resume} external icon={<FileTextIcon className="h-full w-full" />} iconPosition="left">
               Resume
             </ButtonLink>
-            <IconLink href={profile.github} label="GitHub">
-              <GithubIcon className="h-full w-full" />
-            </IconLink>
-            <IconLink href={profile.linkedin} label="LinkedIn">
-              <LinkedinIcon className="h-full w-full" />
-            </IconLink>
+            {socials.github ? (
+              <IconLink href={socials.github} label="GitHub">
+                <GithubIcon className="h-full w-full" />
+              </IconLink>
+            ) : null}
+            {socials.linkedin ? (
+              <IconLink href={socials.linkedin} label="LinkedIn">
+                <LinkedinIcon className="h-full w-full" />
+              </IconLink>
+            ) : null}
           </div>
 
           <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">

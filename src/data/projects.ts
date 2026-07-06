@@ -1,4 +1,13 @@
 export type Project = {
+  /**
+   * Stable identifier used to resolve this project's image.
+   * The image is loaded automatically from (in priority order):
+   *   1. a Vercel Blob uploaded via the /admin page, stored at `projects/<slug>`
+   *   2. a committed file at `public/projects/<slug>.<ext>`
+   * To change a project image you never edit code: upload it on /admin, or drop a
+   * file named `<slug>.webp` (or .png/.jpg) into `public/projects/` and redeploy.
+   */
+  slug: string;
   title: string;
   category: string;
   summary: string;
@@ -10,15 +19,14 @@ export type Project = {
     label: string;
     href: string;
   }[];
-  image?: {
-    src: string;
-    alt: string;
-  };
+  /** Alt text for the resolved image. Falls back to a generated description. */
+  imageAlt?: string;
   featured?: boolean;
 };
 
 export const projects: Project[] = [
   {
+    slug: "customer-service-rag-assistant",
     title: "Customer Service RAG Assistant",
     category: "AI Systems / Retrieval / Internal Tools",
     summary:
@@ -47,6 +55,7 @@ export const projects: Project[] = [
     featured: true,
   },
   {
+    slug: "ai-tennis-analysis",
     title: "AI Tennis Match Analysis",
     category: "Computer Vision / Deep Learning / Sports Analytics",
     summary:
@@ -63,12 +72,11 @@ export const projects: Project[] = [
       "Combined model inference, geometric reasoning, and Pandas-based data analysis in one workflow.",
     ],
     tags: ["YOLO", "PyTorch", "OpenCV", "Python", "NumPy", "Pandas", "Computer Vision"],
-    image: {
-      src: "/projects/ai-tennis-analysis.webp",
-      alt: "AI tennis match analysis project slide showing court detection and player tracking screenshots.",
-    },
+    imageAlt:
+      "AI tennis match analysis project slide showing court detection and player tracking screenshots.",
   },
   {
+    slug: "zanny-sponsorship-platform",
     title: "Zanny Campus Sponsorship Platform",
     category: "Full-Stack Product / Campus Partnership Platform",
     summary:
@@ -101,12 +109,11 @@ export const projects: Project[] = [
         href: "https://zanny.net",
       },
     ],
-    image: {
-      src: "/projects/zanny-sponsorship-platform.webp",
-      alt: "Zanny campus sponsorship platform slide showing platform screenshots and chatbot interface.",
-    },
+    imageAlt:
+      "Zanny campus sponsorship platform slide showing platform screenshots and chatbot interface.",
   },
   {
+    slug: "voice-support-twilio",
     title: "Voice Support Demo with Twilio",
     category: "Voice AI / System Integration / Customer Support",
     summary:
@@ -125,6 +132,7 @@ export const projects: Project[] = [
     tags: ["Twilio", "Flask", "Python", "STT", "TTS", "LLM", "Webhooks", "ngrok"],
   },
   {
+    slug: "merchant-platform",
     title: "Merchant Platform Full-Stack Features",
     category: "Full-Stack Engineering / Web Application",
     summary:
@@ -154,6 +162,7 @@ export const projects: Project[] = [
     ],
   },
   {
+    slug: "security-escape-linebot",
     title: "Cybersecurity Escape Room LINE Bot",
     category: "Automation / LINE Bot / Educational Game",
     summary:
@@ -170,12 +179,11 @@ export const projects: Project[] = [
       "Improved the operational flow for facilitators running the cybersecurity activity.",
     ],
     tags: ["LINE Messaging API", "Google Apps Script", "JavaScript", "Automation", "Chatbot"],
-    image: {
-      src: "/projects/security-escape-linebot.webp",
-      alt: "Cybersecurity escape room LINE Bot slide showing LINE interaction and spreadsheet database screenshots.",
-    },
+    imageAlt:
+      "Cybersecurity escape room LINE Bot slide showing LINE interaction and spreadsheet database screenshots.",
   },
   {
+    slug: "admissions-choice-linebot",
     title: "Admissions Choice Game LINE Bot",
     category: "Automation / LINE Bot / Campus Engagement",
     summary:
@@ -192,12 +200,11 @@ export const projects: Project[] = [
       "Supported reward-style interaction through LINE Official Account coupon features.",
     ],
     tags: ["LINE Messaging API", "Firebase", "Google Apps Script", "JavaScript", "Automation"],
-    image: {
-      src: "/projects/admissions-choice-linebot.webp",
-      alt: "Admissions choice game LINE Bot slide showing campus quiz interactions and reward screenshots.",
-    },
+    imageAlt:
+      "Admissions choice game LINE Bot slide showing campus quiz interactions and reward screenshots.",
   },
   {
+    slug: "web-crawling-course",
     title: "Web Crawling and Data Analysis Course",
     category: "Data Engineering / Teaching / Applied Analytics",
     summary:
@@ -224,12 +231,11 @@ export const projects: Project[] = [
       "Folium",
       "Octoparse",
     ],
-    image: {
-      src: "/projects/web-crawling-course.webp",
-      alt: "Web crawling and data analysis course slide showing maps, word clouds, spreadsheet data, and course modules.",
-    },
+    imageAlt:
+      "Web crawling and data analysis course slide showing maps, word clouds, spreadsheet data, and course modules.",
   },
   {
+    slug: "linkedu",
     title: "LinkEDU",
     category: "Education / Public Engagement / Leadership",
     summary:

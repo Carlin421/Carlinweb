@@ -15,15 +15,9 @@ export function About() {
           <div className="relative overflow-hidden rounded-lg border border-warm-border bg-warm-surface p-6 shadow-sm md:p-8">
             <span className="absolute inset-x-0 top-0 h-1 bg-cool-accent" aria-hidden="true" />
             <div className="space-y-5 text-base leading-8 text-warm-secondary md:text-lg">
-              <p>
-                I am an incoming Master of Science in Information student at the University of Michigan with experience in full-stack development, AI-assisted systems, and real-world software projects.
-              </p>
-              <p>
-                Recently, I worked on customer-support automation projects involving retrieval-augmented generation, voice interfaces, and LLM-based workflow tools during a software engineering internship in New York.
-              </p>
-              <p>
-                My current interests are software engineering, ML infrastructure, retrieval systems, backend development, and AI products that improve operational efficiency.
-              </p>
+              {profile.about.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
             </div>
           </div>
 

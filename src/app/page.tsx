@@ -4,7 +4,6 @@ import { Contact } from "@/components/Contact";
 import { Experience } from "@/components/Experience";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
-import { Leadership } from "@/components/Leadership";
 import { Navbar } from "@/components/Navbar";
 import { Projects } from "@/components/Projects";
 import { SectionReveal } from "@/components/SectionReveal";
@@ -32,9 +31,6 @@ export default function Home() {
           <AdditionalWork />
         </SectionReveal>
         <SectionReveal delay={140}>
-          <Leadership />
-        </SectionReveal>
-        <SectionReveal delay={160}>
           <Contact />
         </SectionReveal>
       </main>

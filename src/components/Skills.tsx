@@ -14,7 +14,7 @@ export function Skills() {
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {skills.map((group) => (
-            <article key={group.category} className="rounded-lg border border-warm-border bg-warm-surface p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cool-accent hover:shadow-card">
+            <article key={group.category} className="group rounded-lg border border-warm-border bg-warm-surface p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cool-accent hover:shadow-card">
               <span className="mb-4 block h-1 w-10 rounded-full bg-signal-gold" aria-hidden="true" />
               <h3 className="text-lg font-semibold text-warm-text">{group.category}</h3>
               <div className="mt-5 flex flex-wrap gap-2">

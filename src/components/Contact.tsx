@@ -1,11 +1,9 @@
 import { ButtonLink } from "@/components/ButtonLink";
 import { IconLink } from "@/components/IconLink";
 import { FileTextIcon, GithubIcon, LinkedinIcon, MailIcon } from "@/components/icons";
-import { profile } from "@/data/profile";
+import { profile, socials } from "@/data/profile";
 
 export function Contact() {
-  const emailHref = profile.email === "YOUR_EMAIL_HERE" ? "#" : `mailto:${profile.email}`;
-
   return (
     <section id="contact" className="px-5 py-20 md:px-8">
       <div className="mx-auto max-w-5xl rounded-lg border border-warm-border bg-[linear-gradient(135deg,#23211E_0%,#23383A_54%,#5F3F2B_100%)] bg-[length:180%_180%] p-8 text-warm-surface shadow-lift md:p-12 motion-safe:animate-surface-shift">
@@ -23,18 +21,24 @@ export function Contact() {
         </p>
 
         <div className="mt-9 flex flex-wrap items-center gap-3">
-          <ButtonLink href={emailHref} variant="secondary" ariaLabel="Email Carlin Hou" icon={<MailIcon className="h-full w-full" />} iconPosition="left">
-            Email Me
-          </ButtonLink>
+          {socials.email ? (
+            <ButtonLink href={`mailto:${socials.email}`} variant="secondary" ariaLabel="Email Carlin Hou" icon={<MailIcon className="h-full w-full" />} iconPosition="left">
+              Email Me
+            </ButtonLink>
+          ) : null}
           <ButtonLink href={profile.resume} variant="secondary" external icon={<FileTextIcon className="h-full w-full" />} iconPosition="left">
             Resume
           </ButtonLink>
-          <IconLink href={profile.github} label="GitHub" variant="dark">
-            <GithubIcon className="h-full w-full" />
-          </IconLink>
-          <IconLink href={profile.linkedin} label="LinkedIn" variant="dark">
-            <LinkedinIcon className="h-full w-full" />
-          </IconLink>
+          {socials.github ? (
+            <IconLink href={socials.github} label="GitHub" variant="dark">
+              <GithubIcon className="h-full w-full" />
+            </IconLink>
+          ) : null}
+          {socials.linkedin ? (
+            <IconLink href={socials.linkedin} label="LinkedIn" variant="dark">
+              <LinkedinIcon className="h-full w-full" />
+            </IconLink>
+          ) : null}
         </div>
       </div>
     </section>
