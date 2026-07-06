@@ -99,6 +99,7 @@ function readProfile(value: unknown, errors: string[]): Profile {
     github: readString(record.github, "profile.github", errors),
     linkedin: readString(record.linkedin, "profile.linkedin", errors),
     resume: readString(record.resume, "profile.resume", errors),
+    photo: readString(record.photo, "profile.photo", errors),
     about: readStringArray(record.about, "profile.about", errors),
     education: readList(record.education, "profile.education", errors, MAX_LIST, readEducation),
     focusAreas: readStringArray(record.focusAreas, "profile.focusAreas", errors),

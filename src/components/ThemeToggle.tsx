@@ -42,7 +42,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
       title={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-surface/70 text-ink-dim transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-accent/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-line-strong text-ink-dim transition-colors duration-200 hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base"
     >
       <span className="relative inline-flex h-[18px] w-[18px] items-center justify-center">
         <span

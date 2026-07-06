@@ -1,25 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 
 import type { Profile } from "@/lib/siteContent";
 
 import { moveItem, removeItem, updateItem } from "./arrayUtils";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { InputField, TextAreaField } from "./fields";
+import { Field, InputField, TextAreaField } from "./fields";
 import { MoveButtons } from "./MoveButtons";
 import { SectionCard } from "./SectionCard";
 import { StringListEditor } from "./StringListEditor";
-import { addButtonClass, dangerButtonClass, iconButtonClass } from "./styles";
+import { useToast } from "./Toast";
+import { addButtonClass, dangerButtonClass, fileInputClass, iconButtonClass } from "./styles";
 
 type ProfileEditorProps = {
   profile: Profile;
   onChange: (patch: Partial<Profile>) => void;
   onResetAll: () => void;
+  onUnauthorized: () => void;
 };
 
-export function ProfileEditor({ profile, onChange, onResetAll }: ProfileEditorProps) {
+export function ProfileEditor({
+  profile,
+  onChange,
+  onResetAll,
+  onUnauthorized,
+}: ProfileEditorProps) {
+  const toast = useToast();
   const [confirmReset, setConfirmReset] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadPhoto = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.set("file", file);
+      const res = await fetch("/api/admin/photo", { method: "POST", body: form });
+      if (res.status === 401) {
+        onUnauthorized();
+        return;
+      }
+      const data = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
+      if (!res.ok || !data?.url) {
+        toast(data?.error ?? "Upload failed. Try again.", "error");
+        return;
+      }
+      onChange({ photo: data.url });
+      toast("Photo uploaded — click Save to keep it.");
+    } catch {
+      toast("Upload failed — check your connection.", "error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const addEducation = () =>
     onChange({ education: [...profile.education, { school: "", degree: "", detail: "" }] });
@@ -41,6 +77,58 @@ export function ProfileEditor({ profile, onChange, onResetAll }: ProfileEditorPr
             value={profile.location}
             onChange={(v) => onChange({ location: v })}
           />
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        title="Portrait photo"
+        description="Shown in the hero. Square or portrait crops look best. Leave empty to show your monogram instead."
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          {profile.photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.photo}
+              alt="Current portrait"
+              className="h-24 w-24 rounded-lg border border-line object-cover"
+            />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-line font-display text-2xl text-ink-mute"
+            >
+              {(profile.name || "?")
+                .split(" ")
+                .map((word) => word[0])
+                .slice(0, 2)
+                .join("")
+                .toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-[12rem] flex-1 space-y-2">
+            <Field label="Upload photo" htmlFor="profile-photo" hint="WEBP, PNG, JPG, or AVIF — up to 8 MB.">
+              <input
+                id="profile-photo"
+                type="file"
+                accept="image/webp,image/png,image/jpeg,image/avif"
+                onChange={uploadPhoto}
+                disabled={uploading}
+                className={fileInputClass}
+              />
+            </Field>
+            <p aria-live="polite" role="status" className="min-h-4 text-xs text-ink-dim">
+              {uploading ? "Uploading…" : ""}
+            </p>
+            {profile.photo && (
+              <button
+                type="button"
+                onClick={() => onChange({ photo: "" })}
+                className="text-xs text-ink-mute underline-offset-2 hover:text-accent hover:underline"
+              >
+                Remove photo
+              </button>
+            )}
+          </div>
         </div>
       </SectionCard>
 

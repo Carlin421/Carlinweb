@@ -15,39 +15,36 @@ type ProjectCardProps = {
 };
 
 function CardImage({ project, imageSrc, index, featured }: ProjectCardProps) {
+  const ratio = featured ? "aspect-[16/10] lg:aspect-auto lg:h-full" : "aspect-[16/10]";
+
   if (imageSrc) {
     return (
-      <div
-        className={cn(
-          "relative overflow-hidden bg-base-2",
-          featured ? "aspect-[16/10] lg:aspect-auto lg:h-full" : "aspect-[16/9]"
-        )}
-      >
+      <div className={cn("relative overflow-hidden border-b border-line bg-surface-2", ratio, featured && "lg:border-b-0 lg:border-r")}>
         <Image
           src={imageSrc}
-          alt={project.imageAlt ?? `${project.title} project preview`}
+          alt={project.imageAlt ?? `${project.title} preview`}
           fill
-          sizes={featured ? "(min-width: 1024px) 48vw, 100vw" : "(min-width: 768px) 50vw, 100vw"}
+          sizes={featured ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 768px) 50vw, 100vw"}
           priority={featured}
-          className="object-contain p-3 transition-transform duration-500 ease-out-expo group-hover:scale-[1.03]"
+          className="object-contain p-4 transition-transform duration-500 ease-out-expo group-hover:scale-[1.02]"
         />
       </div>
     );
   }
 
-  // No image yet — render an intentional typographic placeholder instead of a gap.
   return (
     <div
       aria-hidden="true"
       className={cn(
-        "relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-surface-2 to-base-2",
-        featured ? "aspect-[16/10] lg:aspect-auto lg:h-full" : "aspect-[16/9]"
+        "relative flex items-center justify-center overflow-hidden border-b border-line bg-surface-2",
+        ratio,
+        featured && "lg:border-b-0 lg:border-r"
       )}
     >
-      <span className="select-none font-display text-[7rem] font-medium leading-none text-line-strong/60 transition-colors duration-500 group-hover:text-accent/25">
+      <span className="select-none font-display text-[6rem] font-medium leading-none text-line-strong transition-colors duration-500 group-hover:text-accent/40">
         {String(index + 1).padStart(2, "0")}
       </span>
-      <span className="absolute bottom-4 left-5 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-mute">
+      <span className="absolute bottom-4 left-5 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-mute">
         {project.slug}
       </span>
     </div>
@@ -60,24 +57,26 @@ export function ProjectCard({ project, imageSrc, index, featured = false }: Proj
   return (
     <article
       className={cn(
-        "group card-topline overflow-hidden rounded-2xl border border-line bg-surface",
-        "transition-all duration-300 ease-out-expo hover:-translate-y-1 hover:border-accent/40 hover:shadow-lift",
+        "group overflow-hidden rounded-sm border border-line bg-base transition-colors duration-300 hover:border-line-strong",
         featured && "lg:grid lg:grid-cols-2"
       )}
     >
       <CardImage project={project} imageSrc={imageSrc} index={index} featured={featured} />
 
       <div className={cn("p-6 md:p-7", featured && "lg:flex lg:flex-col lg:p-9")}>
-        <p className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-          <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-          <span aria-hidden="true" className="h-px w-5 bg-accent/50" />
-          <span className="truncate">{project.category}</span>
-        </p>
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="index-label text-accent">
+            <span className="truncate">{project.category}</span>
+          </p>
+          <span className="shrink-0 font-mono text-[11px] text-ink-mute">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        </div>
 
-        <h3 className="mt-3 font-display text-2xl font-medium tracking-tight text-ink md:text-[1.7rem]">
+        <h3 className="mt-3 font-display text-2xl font-medium tracking-tight text-ink md:text-[1.65rem]">
           {project.title}
           {featured && (
-            <span className="ml-3 inline-block rounded-full border border-gold/40 bg-gold/10 px-2.5 py-1 align-middle font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
+            <span className="ml-3 inline-block rounded-sm border border-accent px-2 py-0.5 align-middle font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
               Featured
             </span>
           )}
@@ -88,48 +87,58 @@ export function ProjectCard({ project, imageSrc, index, featured = false }: Proj
         </p>
 
         {featured ? (
-          <div className="mt-6 grid gap-5 sm:grid-cols-2">
-            <div>
-              <h4 className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute">
-                The problem
-              </h4>
-              <p className="mt-2 text-sm leading-relaxed text-ink-dim">{project.problem}</p>
+          <>
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              <div>
+                <h4 className="index-label text-ink-mute">The problem</h4>
+                <p className="mt-2 text-sm leading-relaxed text-ink-dim">{project.problem}</p>
+              </div>
+              <div>
+                <h4 className="index-label text-ink-mute">What I built</h4>
+                <p className="mt-2 text-sm leading-relaxed text-ink-dim">{project.built}</p>
+              </div>
             </div>
-            <div>
-              <h4 className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute">
-                What I built
-              </h4>
-              <p className="mt-2 text-sm leading-relaxed text-ink-dim">{project.built}</p>
-            </div>
-          </div>
+            {project.highlights.length > 0 && (
+              <ul className="mt-5 space-y-2">
+                {project.highlights.map((highlight) => (
+                  <li
+                    key={highlight}
+                    className="grid grid-cols-[auto_1fr] gap-3 text-sm leading-relaxed text-ink-dim"
+                  >
+                    <span aria-hidden="true" className="mt-2 h-px w-3 bg-accent" />
+                    {highlight}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
         ) : (
           <details className="group/details mt-4">
-            <summary className="flex cursor-pointer list-none items-center gap-1.5 font-mono text-xs text-accent transition-colors hover:text-ink [&::-webkit-details-marker]:hidden">
-              More detail
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-accent transition-colors hover:text-ink [&::-webkit-details-marker]:hidden">
+              Detail
               <ChevronDown
                 width={14}
                 height={14}
                 className="transition-transform duration-300 group-open/details:rotate-180"
               />
             </summary>
-            <div className="mt-4 space-y-4 border-l-2 border-line pl-4">
+            <div className="mt-4 space-y-4 border-l border-line pl-4">
               <div>
-                <h4 className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute">
-                  The problem
-                </h4>
+                <h4 className="index-label text-ink-mute">The problem</h4>
                 <p className="mt-1.5 text-sm leading-relaxed text-ink-dim">{project.problem}</p>
               </div>
               <div>
-                <h4 className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute">
-                  What I built
-                </h4>
+                <h4 className="index-label text-ink-mute">What I built</h4>
                 <p className="mt-1.5 text-sm leading-relaxed text-ink-dim">{project.built}</p>
               </div>
               {project.highlights.length > 0 && (
-                <ul className="space-y-1.5">
+                <ul className="space-y-2">
                   {project.highlights.map((highlight) => (
-                    <li key={highlight} className="flex gap-2 text-sm leading-relaxed text-ink-dim">
-                      <span aria-hidden="true" className="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-accent" />
+                    <li
+                      key={highlight}
+                      className="grid grid-cols-[auto_1fr] gap-3 text-sm leading-relaxed text-ink-dim"
+                    >
+                      <span aria-hidden="true" className="mt-2 h-px w-3 bg-accent" />
                       {highlight}
                     </li>
                   ))}
@@ -139,17 +148,6 @@ export function ProjectCard({ project, imageSrc, index, featured = false }: Proj
           </details>
         )}
 
-        {featured && project.highlights.length > 0 && (
-          <ul className="mt-5 space-y-1.5">
-            {project.highlights.map((highlight) => (
-              <li key={highlight} className="flex gap-2 text-sm leading-relaxed text-ink-dim">
-                <span aria-hidden="true" className="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-accent" />
-                {highlight}
-              </li>
-            ))}
-          </ul>
-        )}
-
         <div className={cn("mt-6 flex flex-wrap items-center gap-1.5", featured && "lg:mt-auto lg:pt-6")}>
           {project.tags.map((tag) => (
             <Tag key={tag}>{tag}</Tag>
@@ -157,7 +155,7 @@ export function ProjectCard({ project, imageSrc, index, featured = false }: Proj
         </div>
 
         {links.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-4">
             {links.map((link) => (
               <ButtonLink
                 key={link.href}
@@ -165,7 +163,7 @@ export function ProjectCard({ project, imageSrc, index, featured = false }: Proj
                 external
                 variant="ghost"
                 icon={<ArrowUpRight width={15} height={15} />}
-                className="px-0 text-sm"
+                className="text-sm"
               >
                 {link.label}
               </ButtonLink>

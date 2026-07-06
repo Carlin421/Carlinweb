@@ -12,8 +12,7 @@ type ProjectExplorerProps = {
   imageMap: Record<string, string>;
 };
 
-// Buckets are derived from category keywords so admin-added projects sort
-// themselves without code changes; anything unmatched lands in "Other".
+// Buckets derive from category keywords so admin-added projects sort themselves.
 const BUCKETS: { id: string; label: string; test: (category: string) => boolean }[] = [
   {
     id: "ai",
@@ -25,14 +24,10 @@ const BUCKETS: { id: string; label: string; test: (category: string) => boolean 
     label: "Full-stack",
     test: (c) => /full[- ]stack|web application|platform|product/i.test(c),
   },
-  {
-    id: "automation",
-    label: "Bots & automation",
-    test: (c) => /automation|bot|chatbot/i.test(c),
-  },
+  { id: "automation", label: "Automation", test: (c) => /automation|bot|chatbot/i.test(c) },
   {
     id: "teaching",
-    label: "Teaching & leadership",
+    label: "Teaching",
     test: (c) => /teaching|education|leadership|course/i.test(c),
   },
 ];
@@ -61,8 +56,8 @@ export function ProjectExplorer({ projects, imageMap }: ProjectExplorerProps) {
   ];
 
   const featured = projects.find((project) => project.featured) ?? projects[0];
-  const visible = projects.filter(
-    (project) => filter === "all" ? project !== featured : bucketOf(project) === filter
+  const visible = projects.filter((project) =>
+    filter === "all" ? project !== featured : bucketOf(project) === filter
   );
 
   return (
@@ -70,7 +65,7 @@ export function ProjectExplorer({ projects, imageMap }: ProjectExplorerProps) {
       <div
         role="group"
         aria-label="Filter projects by area"
-        className="mb-10 flex flex-wrap gap-2"
+        className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-line pb-4"
       >
         {filters.map((item) => {
           const selected = filter === item.id;
@@ -81,15 +76,13 @@ export function ProjectExplorer({ projects, imageMap }: ProjectExplorerProps) {
               aria-pressed={selected}
               onClick={() => setFilter(item.id)}
               className={cn(
-                "rounded-full border px-4 py-2 font-mono text-xs transition-all duration-300 ease-out-expo",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base",
-                selected
-                  ? "border-accent bg-accent text-accent-ink shadow-card"
-                  : "border-line-strong bg-surface/70 text-ink-dim hover:-translate-y-0.5 hover:border-accent/50 hover:text-ink"
+                "group flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors duration-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4 focus-visible:ring-offset-base",
+                selected ? "text-accent" : "text-ink-dim hover:text-ink"
               )}
             >
               {item.label}
-              <span className={cn("ml-1.5", selected ? "text-accent-ink/70" : "text-ink-mute")}>
+              <span className={selected ? "text-accent" : "text-ink-mute"}>
                 {counts[item.id] ?? 0}
               </span>
             </button>
@@ -113,7 +106,7 @@ export function ProjectExplorer({ projects, imageMap }: ProjectExplorerProps) {
           <div
             key={project.slug}
             className="motion-safe:animate-fade-up"
-            style={{ animationDelay: `${Math.min(order * 60, 360)}ms` }}
+            style={{ animationDelay: `${Math.min(order * 55, 330)}ms` }}
           >
             <ProjectCard
               project={project}
@@ -125,7 +118,7 @@ export function ProjectExplorer({ projects, imageMap }: ProjectExplorerProps) {
       </div>
 
       {visible.length === 0 && filter !== "all" && (
-        <p className="rounded-2xl border border-line bg-surface px-6 py-10 text-center font-mono text-sm text-ink-mute">
+        <p className="border border-line py-10 text-center font-mono text-sm text-ink-mute">
           Nothing in this bucket yet.
         </p>
       )}

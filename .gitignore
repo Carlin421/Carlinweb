@@ -9,3 +9,6 @@ out
 
 # Local content-store fallback used when no Vercel Blob token is configured
 .content/
+
+# Local dev image uploads (portrait photo) when no Vercel Blob token is set
+public/uploads/

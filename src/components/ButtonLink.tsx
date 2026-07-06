@@ -15,11 +15,9 @@ type ButtonLinkProps = {
 };
 
 const variants = {
-  primary:
-    "bg-accent text-accent-ink shadow-card hover:shadow-lift hover:brightness-105 border border-transparent",
-  secondary:
-    "border border-line-strong bg-surface/70 text-ink hover:border-accent/60 hover:bg-surface",
-  ghost: "border border-transparent text-accent hover:text-ink px-2",
+  primary: "bg-accent text-accent-ink hover:brightness-110 border border-accent",
+  secondary: "border border-line-strong text-ink hover:border-accent hover:text-accent",
+  ghost: "border-none px-0 text-ink hover:text-accent",
 } as const;
 
 export function ButtonLink({
@@ -33,8 +31,8 @@ export function ButtonLink({
   className,
 }: ButtonLinkProps) {
   const classes = cn(
-    "group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium no-underline",
-    "transition-all duration-300 ease-out-expo hover:-translate-y-0.5",
+    "group inline-flex items-center gap-2 rounded-sm px-5 py-2.5 text-sm font-medium no-underline",
+    "transition-all duration-200 ease-out-expo",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base",
     variants[variant],
     className
@@ -43,15 +41,13 @@ export function ButtonLink({
   const content = (
     <>
       {icon && iconPosition === "left" && (
-        <span className="transition-transform duration-300 group-hover:-translate-x-0.5">
+        <span className="transition-transform duration-200 group-hover:-translate-x-0.5">
           {icon}
         </span>
       )}
       {children}
       {icon && iconPosition === "right" && (
-        <span className="transition-transform duration-300 group-hover:translate-x-0.5">
-          {icon}
-        </span>
+        <span className="transition-transform duration-200 group-hover:translate-x-1">{icon}</span>
       )}
     </>
   );

@@ -9,33 +9,30 @@ type SkillsProps = {
 
 export function Skills({ skills }: SkillsProps) {
   return (
-    <section id="skills" className="scroll-mt-24 bg-base-2/60">
-      <div className="mx-auto max-w-6xl px-6 py-24 md:px-8 md:py-28">
+    <section id="skills" className="scroll-mt-20">
+      <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-28">
         <SectionHeading
           index="04"
           eyebrow="Skills"
-          title="Tools I reach for"
-          description="The languages, frameworks, and platforms behind the projects above."
+          title="Toolkit"
+          description="The languages, frameworks, and platforms behind the work above."
         />
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="border-t border-line">
           {skills.map((group, index) => (
             <div
               key={group.category}
-              className="group card-topline rounded-2xl border border-line bg-surface p-6 transition-all duration-300 ease-out-expo hover:-translate-y-1 hover:border-accent/40 hover:shadow-card"
+              className="grid gap-x-8 gap-y-3 border-b border-line py-6 md:grid-cols-[auto_1fr] md:py-7"
             >
-              <h3 className="flex items-baseline gap-3">
-                <span
-                  aria-hidden="true"
-                  className="font-mono text-[11px] tracking-[0.2em] text-accent"
-                >
+              <div className="flex items-baseline gap-3 md:w-56">
+                <span className="font-mono text-[11px] text-accent">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <span className="font-display text-lg font-medium tracking-tight text-ink">
+                <h3 className="font-display text-lg font-medium tracking-tight text-ink">
                   {group.category}
-                </span>
-              </h3>
-              <div className="mt-4 flex flex-wrap gap-1.5">
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
                 {group.items.map((item) => (
                   <Tag key={item}>{item}</Tag>
                 ))}

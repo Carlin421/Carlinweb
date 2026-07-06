@@ -208,6 +208,7 @@ function DashboardShell({ initialContent, imageMap }: AdminDashboardProps) {
                 profile={content.profile}
                 onChange={updateProfile}
                 onResetAll={resetAll}
+                onUnauthorized={onUnauthorized}
               />
             )}
             {tab === "projects" && (

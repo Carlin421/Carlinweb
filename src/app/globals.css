@@ -3,119 +3,84 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   Design tokens. RGB triplets so Tailwind alpha modifiers work (bg-accent/10).
-   Dark is the default theme; [data-theme="light"] swaps the palette. The
-   no-flash script in layout.tsx sets data-theme before first paint.
+   Swiss/International-style tokens. Light is the primary palette: warm white,
+   near-black ink, a single vermillion accent, hairline rules, flat surfaces.
+   Dark is a tuned secondary. RGB triplets so Tailwind alpha modifiers work.
+   The no-flash script in layout.tsx sets data-theme before first paint.
 --------------------------------------------------------------------------- */
 :root,
-[data-theme="dark"] {
-  color-scheme: dark;
-
-  --c-bg: 14 12 9; /* #0E0C09 warm near-black */
-  --c-bg-2: 19 16 12;
-  --c-surface: 24 20 15; /* #18140F card */
-  --c-surface-2: 32 27 20;
-  --c-ink: 240 233 220; /* #F0E9DC warm cream */
-  --c-ink-dim: 178 168 150;
-  --c-ink-mute: 130 121 106;
-  --c-line: 45 39 30; /* hairline borders */
-  --c-line-strong: 68 59 45;
-  --c-accent: 224 154 104; /* #E09A68 copper */
-  --c-accent-ink: 26 18 12; /* text on accent fills */
-  --c-teal: 82 199 183; /* #52C7B7 */
-  --c-gold: 216 178 110;
-
-  --shadow-card: 0 18px 50px rgb(0 0 0 / 0.45);
-  --shadow-lift: 0 24px 70px rgb(0 0 0 / 0.55);
-  --glow-accent: rgb(224 154 104 / 0.13);
-  --glow-teal: rgb(82 199 183 / 0.1);
-  --grid-line: rgb(240 233 220 / 0.028);
-  --noise-opacity: 0.028;
-}
-
 [data-theme="light"] {
   color-scheme: light;
 
-  --c-bg: 247 243 234; /* #F7F3EA parchment */
-  --c-bg-2: 242 236 224;
-  --c-surface: 255 253 248;
-  --c-surface-2: 240 233 220;
-  --c-ink: 35 33 30; /* #23211E charcoal */
-  --c-ink-dim: 90 84 72;
-  --c-ink-mute: 138 129 116;
-  --c-line: 221 211 194;
-  --c-line-strong: 199 186 162;
-  --c-accent: 164 90 46; /* #A45A2E copper, dark enough on cream */
-  --c-accent-ink: 255 250 242;
-  --c-teal: 14 116 108;
-  --c-gold: 150 110 44;
+  --c-bg: 251 250 247; /* #FBFAF7 warm white */
+  --c-bg-2: 244 242 236;
+  --c-surface: 255 255 255;
+  --c-surface-2: 246 244 239;
+  --c-ink: 23 21 16; /* #171510 near-black */
+  --c-ink-dim: 84 80 72;
+  --c-ink-mute: 139 133 122;
+  --c-line: 226 222 213; /* hairline */
+  --c-line-strong: 199 193 181;
+  --c-accent: 214 56 30; /* #D6381E vermillion */
+  --c-accent-ink: 255 255 255; /* text on the accent fill */
 
-  --shadow-card: 0 18px 50px rgb(35 33 30 / 0.1);
-  --shadow-lift: 0 24px 60px rgb(35 33 30 / 0.14);
-  --glow-accent: rgb(164 90 46 / 0.08);
-  --glow-teal: rgb(14 116 108 / 0.07);
-  --grid-line: rgb(35 33 30 / 0.035);
-  --noise-opacity: 0.02;
+  --shadow-card: 0 1px 0 rgb(23 21 16 / 0.04);
+  --shadow-lift: 0 20px 48px -24px rgb(23 21 16 / 0.28);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --c-bg: 18 17 14; /* #12110E near-black warm */
+  --c-bg-2: 24 22 18;
+  --c-surface: 28 26 21;
+  --c-surface-2: 36 33 27;
+  --c-ink: 243 240 232; /* #F3F0E8 warm cream */
+  --c-ink-dim: 176 169 155;
+  --c-ink-mute: 128 120 107;
+  --c-line: 46 42 34;
+  --c-line-strong: 70 63 51;
+  --c-accent: 255 90 56; /* #FF5A38 brighter vermillion */
+  --c-accent-ink: 20 15 11;
+
+  --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3);
+  --shadow-lift: 0 24px 60px -28px rgb(0 0 0 / 0.7);
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 96px;
+  scroll-padding-top: 88px;
+  /* Tabular figures everywhere — the Swiss numbering system stays aligned. */
+  font-variant-numeric: tabular-nums;
 }
 
 body {
   min-height: 100vh;
   background-color: rgb(var(--c-bg));
-  /* Ambient glows + a faint blueprint grid — the "crafted" backdrop. */
-  background-image:
-    radial-gradient(1100px 520px at 12% -10%, var(--glow-accent), transparent 60%),
-    radial-gradient(900px 460px at 88% -6%, var(--glow-teal), transparent 60%),
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    100% 100%,
-    44px 44px,
-    44px 44px;
-  background-attachment: fixed, fixed, local, local;
   color: rgb(var(--c-ink));
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition:
-    background-color 0.35s ease,
-    color 0.35s ease;
-}
-
-/* Film-grain overlay — sits above everything, never intercepts input. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  pointer-events: none;
-  opacity: var(--noise-opacity);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 160px 160px;
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 ::selection {
-  background: rgb(var(--c-accent) / 0.3);
-  color: rgb(var(--c-ink));
+  background: rgb(var(--c-accent));
+  color: rgb(var(--c-accent-ink));
 }
 
-/* Themed scrollbar (WebKit + Firefox). */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgb(var(--c-line-strong)) transparent;
 }
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-thumb {
   background: rgb(var(--c-line-strong));
-  border-radius: 999px;
   border: 3px solid rgb(var(--c-bg));
 }
 ::-webkit-scrollbar-track {
@@ -123,12 +88,8 @@ body::after {
 }
 
 @layer base {
-  * {
-    @apply border-line;
-  }
-
   a {
-    text-decoration-thickness: 0.08em;
+    text-decoration-thickness: 0.07em;
     text-underline-offset: 0.2em;
   }
 
@@ -139,29 +100,23 @@ body::after {
 }
 
 @layer utilities {
-  /* Copper→gold gradient text for display headline accents. */
-  .text-gradient-accent {
-    background: linear-gradient(
-      100deg,
-      rgb(var(--c-accent)) 0%,
-      rgb(var(--c-gold)) 55%,
-      rgb(var(--c-accent)) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  /* The recurring Swiss element: a hairline rule the full width of its box. */
+  .rule {
+    height: 1px;
+    background: rgb(var(--c-line));
   }
 
-  /* Hairline top border with a soft accent fade, used on raised cards. */
-  .card-topline {
-    position: relative;
+  /* Section index label — small, tabular, uppercase. */
+  .index-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
   }
-  .card-topline::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--c-accent) / 0.5), transparent);
+
+  /* Big editorial display balance. */
+  .text-balance {
+    text-wrap: balance;
   }
 }
 

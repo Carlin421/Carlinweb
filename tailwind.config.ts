@@ -1,9 +1,9 @@
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 
-// All colors are semantic tokens backed by CSS variables (RGB triplets) defined
-// in globals.css, so dark/light theming is a single `data-theme` attribute swap
-// and every token supports Tailwind alpha modifiers like `bg-accent/10`.
+// Semantic tokens backed by CSS variables (RGB triplets) from globals.css, so
+// dark/light is a single `data-theme` swap and every token supports Tailwind
+// alpha modifiers like `text-accent/70`.
 const config: Config = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -15,7 +15,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
-        display: ["var(--font-display)", "Georgia", ...defaultTheme.fontFamily.serif],
+        display: ["var(--font-display)", "var(--font-sans)", ...defaultTheme.fontFamily.sans],
         mono: ["var(--font-mono)", ...defaultTheme.fontFamily.mono],
       },
       colors: {
@@ -40,8 +40,15 @@ const config: Config = {
           DEFAULT: "rgb(var(--c-accent) / <alpha-value>)",
           ink: "rgb(var(--c-accent-ink) / <alpha-value>)",
         },
-        teal: "rgb(var(--c-teal) / <alpha-value>)",
-        gold: "rgb(var(--c-gold) / <alpha-value>)",
+      },
+      borderRadius: {
+        // Crisp Swiss corners — small, consistent, never pill-soft on structure.
+        DEFAULT: "3px",
+        sm: "2px",
+        md: "4px",
+        lg: "6px",
+        xl: "8px",
+        "2xl": "10px",
       },
       boxShadow: {
         card: "var(--shadow-card)",
@@ -51,38 +58,28 @@ const config: Config = {
         "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
-        "status-pulse": {
-          "0%, 100%": { boxShadow: "0 0 0 0 rgb(var(--c-teal) / 0.45)" },
-          "50%": { boxShadow: "0 0 0 7px rgb(var(--c-teal) / 0)" },
-        },
         "fade-up": {
-          from: { opacity: "0", transform: "translateY(18px)" },
+          from: { opacity: "0", transform: "translateY(14px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
         "fade-in": {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
-        "subtle-float": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-8px)" },
-        },
-        caret: {
-          "0%, 45%": { opacity: "1" },
-          "50%, 95%": { opacity: "0" },
-        },
         "pop-in": {
-          from: { opacity: "0", transform: "scale(0.97) translateY(6px)" },
+          from: { opacity: "0", transform: "scale(0.98) translateY(4px)" },
           to: { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        "status-pulse": {
+          "0%, 100%": { boxShadow: "0 0 0 0 rgb(var(--c-accent) / 0.4)" },
+          "50%": { boxShadow: "0 0 0 5px rgb(var(--c-accent) / 0)" },
         },
       },
       animation: {
+        "fade-up": "fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "fade-in": "fade-in 0.4s ease-out both",
+        "pop-in": "pop-in 0.16s cubic-bezier(0.16, 1, 0.3, 1) both",
         "status-pulse": "status-pulse 2.6s ease-in-out infinite",
-        "fade-up": "fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both",
-        "fade-in": "fade-in 0.5s ease-out both",
-        "subtle-float": "subtle-float 7s ease-in-out infinite",
-        caret: "caret 1.1s step-end infinite",
-        "pop-in": "pop-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both",
       },
     },
   },

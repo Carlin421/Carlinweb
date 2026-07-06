@@ -25,6 +25,8 @@ export type Profile = {
   linkedin: string;
   /** Path or URL for the resume PDF. Defaults to the committed /resume.pdf. */
   resume: string;
+  /** Portrait photo URL (uploaded via /admin or committed). Empty = show monogram. */
+  photo: string;
   about: string[];
   education: Education[];
   focusAreas: string[];
@@ -49,6 +51,7 @@ export const defaultContent: SiteContent = {
   profile: {
     ...profileDefaults,
     availability: "Open to 2027 summer internships",
+    photo: "",
     focusAreas,
   },
   projects,

@@ -22,7 +22,6 @@ export function CopyEmailButton({ email }: CopyEmailButtonProps) {
     try {
       await navigator.clipboard.writeText(email);
     } catch {
-      // Clipboard API unavailable (e.g. non-secure context) — legacy fallback.
       const textarea = document.createElement("textarea");
       textarea.value = email;
       textarea.style.position = "fixed";
@@ -41,14 +40,11 @@ export function CopyEmailButton({ email }: CopyEmailButtonProps) {
     <button
       type="button"
       onClick={copy}
-      className="group inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface/70 px-5 py-2.5 text-sm font-medium text-ink transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+      aria-label={`Copy email address ${email}`}
+      className="group inline-flex items-center gap-2 rounded-sm border border-line-strong px-4 py-2 font-mono text-[13px] text-ink transition-colors duration-200 hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base"
     >
-      {copied ? (
-        <Check width={15} height={15} className="text-teal" />
-      ) : (
-        <Copy width={15} height={15} className="text-ink-dim" />
-      )}
-      <span className="font-mono text-[13px]">{copied ? "Copied!" : email}</span>
+      {copied ? <Check width={14} height={14} /> : <Copy width={14} height={14} />}
+      {copied ? "Copied" : email}
       <span aria-live="polite" className="sr-only">
         {copied ? "Email address copied to clipboard" : ""}
       </span>

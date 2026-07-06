@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { getSiteContent } from "@/lib/contentStore";
@@ -13,11 +13,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const fraunces = Fraunces({
+// Grotesk display face: geometric, tabular figures, a designed-not-default feel.
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  axes: ["opsz"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -79,14 +79,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0E0C09" },
-    { media: "(prefers-color-scheme: light)", color: "#F7F3EA" },
+    { media: "(prefers-color-scheme: dark)", color: "#12110E" },
+    { media: "(prefers-color-scheme: light)", color: "#FBFAF7" },
   ],
-  colorScheme: "dark light",
+  colorScheme: "light dark",
 };
 
 // Runs before paint so the persisted (or system) theme never flashes.
-const themeInitScript = `(function(){var d=document.documentElement,t;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="light"&&t!=="dark"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}d.dataset.theme=t})()`;
+// Light is the primary palette; system preference is honored on first visit.
+const themeInitScript = `(function(){var d=document.documentElement,t;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="light"&&t!=="dark"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.dataset.theme=t})()`;
 
 type RootLayoutProps = {
   children: ReactNode;
@@ -113,7 +114,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <head>

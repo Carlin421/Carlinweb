@@ -2,8 +2,7 @@ import type { Profile, Socials } from "@/lib/siteContent";
 
 import { ButtonLink } from "./ButtonLink";
 import { CopyEmailButton } from "./CopyEmailButton";
-import { IconLink } from "./IconLink";
-import { ArrowUpRight, FileText, Github, Linkedin, Mail } from "./icons";
+import { ArrowUpRight, FileText, Mail } from "./icons";
 
 type ContactProps = {
   profile: Profile;
@@ -11,36 +10,38 @@ type ContactProps = {
 };
 
 export function Contact({ profile, socials }: ContactProps) {
+  const directory = [
+    socials.email ? { label: "Email", value: socials.email, href: `mailto:${socials.email}` } : null,
+    socials.github
+      ? { label: "GitHub", value: socials.github.replace(/^https?:\/\//, ""), href: socials.github }
+      : null,
+    socials.linkedin
+      ? {
+          label: "LinkedIn",
+          value: socials.linkedin.replace(/^https?:\/\/(www\.)?/, ""),
+          href: socials.linkedin,
+        }
+      : null,
+    { label: "Location", value: profile.location, href: null },
+  ].filter((row): row is { label: string; value: string; href: string | null } => row !== null);
+
   return (
-    <section id="contact" className="scroll-mt-24">
-      <div className="mx-auto max-w-6xl px-6 py-24 md:px-8 md:py-32">
-        <div className="card-topline relative overflow-hidden rounded-3xl border border-line bg-surface px-6 py-16 text-center md:px-16 md:py-20">
-          {/* Ambient corner glows */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(600px 300px at 15% 0%, rgb(var(--c-accent) / 0.09), transparent 60%), radial-gradient(500px 280px at 90% 100%, rgb(var(--c-teal) / 0.08), transparent 60%)",
-            }}
-          />
+    <section id="contact" className="scroll-mt-20">
+      <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-28">
+        <div className="rule" />
+        <p className="index-label mt-4 text-accent">
+          06 <span className="text-ink-mute">/ Contact</span>
+        </p>
 
-          <div className="relative">
-            <p className="flex items-center justify-center gap-3 font-mono text-xs uppercase tracking-[0.22em] text-accent">
-              <span aria-hidden="true">06</span>
-              <span aria-hidden="true" className="h-px w-10 bg-accent/50" />
-              Contact
-            </p>
-
-            <h2 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-medium tracking-tight text-ink md:text-6xl">
-              Let’s build something <em className="text-gradient-accent not-italic">together</em>.
+        <div className="mt-8 grid gap-x-10 gap-y-12 md:grid-cols-12">
+          <div className="md:col-span-7">
+            <h2 className="font-display text-4xl font-medium tracking-[-0.02em] text-ink md:text-6xl">
+              Get in touch
             </h2>
-
-            <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-ink-dim md:text-lg">
+            <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-ink-dim">
               {profile.searchStatus}
             </p>
-
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3.5">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               {socials.email ? (
                 <>
                   <ButtonLink
@@ -74,19 +75,35 @@ export function Contact({ profile, socials }: ContactProps) {
                 Résumé
               </ButtonLink>
             </div>
+          </div>
 
-            <div className="mt-8 flex items-center justify-center gap-3">
-              {socials.github && (
-                <IconLink href={socials.github} label="GitHub">
-                  <Github width={17} height={17} />
-                </IconLink>
-              )}
-              {socials.linkedin && (
-                <IconLink href={socials.linkedin} label="LinkedIn">
-                  <Linkedin width={17} height={17} />
-                </IconLink>
-              )}
-            </div>
+          {/* Contact directory */}
+          <div className="md:col-span-5 md:justify-self-end md:text-right">
+            <dl className="border-t border-line">
+              {directory.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex items-baseline justify-between gap-6 border-b border-line py-4"
+                >
+                  <dt className="index-label text-ink-mute">{row.label}</dt>
+                  <dd className="min-w-0 font-mono text-[13px] text-ink">
+                    {row.href ? (
+                      <a
+                        href={row.href}
+                        {...(row.href.startsWith("mailto:")
+                          ? {}
+                          : { target: "_blank", rel: "noopener noreferrer" })}
+                        className="truncate text-ink no-underline transition-colors hover:text-accent"
+                      >
+                        {row.value}
+                      </a>
+                    ) : (
+                      <span className="truncate">{row.value}</span>
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </div>

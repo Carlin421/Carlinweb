@@ -1,6 +1,5 @@
 import { About } from "@/components/About";
 import { AdditionalWork } from "@/components/AdditionalWork";
-import { CommandPalette } from "@/components/CommandPalette";
 import { Contact } from "@/components/Contact";
 import { Experience } from "@/components/Experience";
 import { Footer } from "@/components/Footer";
@@ -21,7 +20,6 @@ export default async function HomePage() {
   return (
     <>
       <Navbar name={content.profile.name} socials={socials} resume={content.profile.resume} />
-      <CommandPalette socials={socials} resume={content.profile.resume} />
 
       <main>
         <Hero
@@ -33,19 +31,19 @@ export default async function HomePage() {
         <Reveal>
           <About profile={content.profile} />
         </Reveal>
-        <Reveal delay={40}>
+        <Reveal>
           <Projects projects={content.projects} imageMap={imageMap} />
         </Reveal>
-        <Reveal delay={40}>
+        <Reveal>
           <Experience experience={content.experience} />
         </Reveal>
-        <Reveal delay={40}>
+        <Reveal>
           <Skills skills={content.skills} />
         </Reveal>
-        <Reveal delay={40}>
+        <Reveal>
           <AdditionalWork items={content.additionalWork} />
         </Reveal>
-        <Reveal delay={40}>
+        <Reveal>
           <Contact profile={content.profile} socials={socials} />
         </Reveal>
       </main>
