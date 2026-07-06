@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { getSiteContent } from "@/lib/contentStore";
+import { htmlLang, pick } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/locale.server";
 import { getSocials } from "@/lib/siteContent";
 
 import "./globals.css";
@@ -29,9 +31,11 @@ const jetbrainsMono = JetBrains_Mono({
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://carlin-portfolio.vercel.app";
 
 export async function generateMetadata(): Promise<Metadata> {
+  const locale = resolveLocale();
   const { profile } = await getSiteContent();
-  const title = `${profile.name} | Software Engineer`;
-  const description = profile.shortIntro;
+  const role = pick(profile.title, locale).split("|")[0]?.trim() || "Software Engineer";
+  const title = `${profile.name} | ${role}`;
+  const description = pick(profile.shortIntro, locale);
 
   return {
     metadataBase: new URL(siteUrl),
@@ -62,7 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: `${profile.name} — Portfolio`,
       title,
       description,
-      locale: "en_US",
+      locale: locale === "zh" ? "zh_TW" : "en_US",
     },
     twitter: {
       card: "summary_large_image",
@@ -94,6 +98,7 @@ type RootLayoutProps = {
 };
 
 export default async function RootLayout({ children }: RootLayoutProps) {
+  const locale = resolveLocale();
   const { profile } = await getSiteContent();
   const socials = getSocials(profile);
 
@@ -102,18 +107,18 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     "@type": "Person",
     name: profile.name,
     jobTitle: "Software Engineer",
-    description: profile.shortIntro,
+    description: pick(profile.shortIntro, locale),
     url: siteUrl,
     alumniOf: profile.education.map((item) => ({
       "@type": "CollegeOrUniversity",
-      name: item.school,
+      name: pick(item.school, "en"),
     })),
     sameAs: [socials.github, socials.linkedin].filter(Boolean),
   };
 
   return (
     <html
-      lang="en"
+      lang={htmlLang(locale)}
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >

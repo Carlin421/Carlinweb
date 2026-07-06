@@ -1,12 +1,13 @@
 "use client";
 
+import { pick, type Locale } from "@/lib/i18n";
 import type { AdditionalWorkItem } from "@/lib/siteContent";
 
 import { moveItem, removeItem, updateItem } from "./arrayUtils";
-import { CommaListField, InputField, TextAreaField } from "./fields";
+import { CommaListField } from "./fields";
+import { LocalizedInput, LocalizedListEditor, LocalizedTextArea } from "./LocalizedField";
 import { MoveButtons } from "./MoveButtons";
 import { SectionCard } from "./SectionCard";
-import { StringListEditor } from "./StringListEditor";
 import { addButtonClass, iconButtonClass } from "./styles";
 
 const emptyActivity = (): AdditionalWorkItem => ({
@@ -20,28 +21,32 @@ const emptyActivity = (): AdditionalWorkItem => ({
 type ActivitiesEditorProps = {
   items: AdditionalWorkItem[];
   onChange: (items: AdditionalWorkItem[]) => void;
+  locale: Locale;
 };
 
-export function ActivitiesEditor({ items, onChange }: ActivitiesEditorProps) {
+export function ActivitiesEditor({ items, onChange, locale }: ActivitiesEditorProps) {
   return (
     <div className="space-y-6">
       {items.length === 0 && <p className="text-sm italic text-ink-mute">No activities yet.</p>}
-      {items.map((item, i) => (
+      {items.map((item, i) => {
+        const titleText = pick(item.title, locale);
+        const categoryText = pick(item.category, locale);
+        return (
         <SectionCard
           key={i}
-          title={item.title || `Activity ${i + 1}`}
-          description={item.category || undefined}
+          title={titleText || `Activity ${i + 1}`}
+          description={categoryText || undefined}
           actions={
             <div className="flex gap-1">
               <MoveButtons
                 index={i}
                 count={items.length}
                 onMove={(index, dir) => onChange(moveItem(items, index, dir))}
-                label={item.title || `activity ${i + 1}`}
+                label={titleText || `activity ${i + 1}`}
               />
               <button
                 type="button"
-                aria-label={`Remove ${item.title || `activity ${i + 1}`}`}
+                aria-label={`Remove ${titleText || `activity ${i + 1}`}`}
                 onClick={() => onChange(removeItem(items, i))}
                 className={iconButtonClass}
               >
@@ -50,26 +55,30 @@ export function ActivitiesEditor({ items, onChange }: ActivitiesEditorProps) {
             </div>
           }
         >
-          <InputField
+          <LocalizedInput
             label="Title"
             value={item.title}
-            onChange={(v) => onChange(updateItem(items, i, { title: v }))}
+            onChange={(title) => onChange(updateItem(items, i, { title }))}
+            locale={locale}
           />
-          <InputField
+          <LocalizedInput
             label="Category"
             value={item.category}
-            onChange={(v) => onChange(updateItem(items, i, { category: v }))}
+            onChange={(category) => onChange(updateItem(items, i, { category }))}
+            locale={locale}
           />
-          <TextAreaField
+          <LocalizedTextArea
             label="Description"
             value={item.description}
-            onChange={(v) => onChange(updateItem(items, i, { description: v }))}
+            onChange={(description) => onChange(updateItem(items, i, { description }))}
+            locale={locale}
             rows={3}
           />
-          <StringListEditor
+          <LocalizedListEditor
             label="Evidence"
             items={item.evidence}
             onChange={(evidence) => onChange(updateItem(items, i, { evidence }))}
+            locale={locale}
             addLabel="Add evidence"
             multiline
             rows={2}
@@ -80,7 +89,8 @@ export function ActivitiesEditor({ items, onChange }: ActivitiesEditorProps) {
             onChange={(tags) => onChange(updateItem(items, i, { tags }))}
           />
         </SectionCard>
-      ))}
+        );
+      })}
       <button
         type="button"
         onClick={() => onChange([...items, emptyActivity()])}

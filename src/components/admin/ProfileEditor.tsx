@@ -2,14 +2,15 @@
 
 import { useState, type ChangeEvent } from "react";
 
+import type { Locale } from "@/lib/i18n";
 import type { Profile } from "@/lib/siteContent";
 
 import { moveItem, removeItem, updateItem } from "./arrayUtils";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { Field, InputField, TextAreaField } from "./fields";
+import { Field, InputField } from "./fields";
+import { LocalizedInput, LocalizedListEditor, LocalizedTextArea } from "./LocalizedField";
 import { MoveButtons } from "./MoveButtons";
 import { SectionCard } from "./SectionCard";
-import { StringListEditor } from "./StringListEditor";
 import { useToast } from "./Toast";
 import { addButtonClass, dangerButtonClass, fileInputClass, iconButtonClass } from "./styles";
 
@@ -18,6 +19,7 @@ type ProfileEditorProps = {
   onChange: (patch: Partial<Profile>) => void;
   onResetAll: () => void;
   onUnauthorized: () => void;
+  locale: Locale;
 };
 
 export function ProfileEditor({
@@ -25,6 +27,7 @@ export function ProfileEditor({
   onChange,
   onResetAll,
   onUnauthorized,
+  locale,
 }: ProfileEditorProps) {
   const toast = useToast();
   const [confirmReset, setConfirmReset] = useState(false);
@@ -64,18 +67,25 @@ export function ProfileEditor({
     <div className="space-y-6">
       <SectionCard title="Identity" description="Name and headline shown in the hero.">
         <InputField label="Name" value={profile.name} onChange={(v) => onChange({ name: v })} />
-        <InputField label="Title" value={profile.title} onChange={(v) => onChange({ title: v })} />
+        <LocalizedInput
+          label="Title"
+          value={profile.title}
+          onChange={(title) => onChange({ title })}
+          locale={locale}
+        />
         <div className="grid gap-4 md:grid-cols-2">
-          <InputField
+          <LocalizedInput
             label="Availability badge"
             value={profile.availability}
-            onChange={(v) => onChange({ availability: v })}
+            onChange={(availability) => onChange({ availability })}
+            locale={locale}
             hint="Short text shown in the availability badge."
           />
-          <InputField
+          <LocalizedInput
             label="Location"
             value={profile.location}
-            onChange={(v) => onChange({ location: v })}
+            onChange={(location) => onChange({ location })}
+            locale={locale}
           />
         </div>
       </SectionCard>
@@ -154,25 +164,28 @@ export function ProfileEditor({
       </SectionCard>
 
       <SectionCard title="Intro">
-        <TextAreaField
+        <LocalizedTextArea
           label="Short intro"
           value={profile.shortIntro}
-          onChange={(v) => onChange({ shortIntro: v })}
+          onChange={(shortIntro) => onChange({ shortIntro })}
+          locale={locale}
           rows={4}
         />
-        <TextAreaField
+        <LocalizedTextArea
           label="Search status"
           value={profile.searchStatus}
-          onChange={(v) => onChange({ searchStatus: v })}
+          onChange={(searchStatus) => onChange({ searchStatus })}
+          locale={locale}
           rows={3}
         />
       </SectionCard>
 
       <SectionCard title="About">
-        <StringListEditor
+        <LocalizedListEditor
           label="About paragraphs"
           items={profile.about}
           onChange={(about) => onChange({ about })}
+          locale={locale}
           addLabel="Add paragraph"
           multiline
           rows={3}
@@ -208,20 +221,23 @@ export function ProfileEditor({
                 </button>
               </div>
             </div>
-            <InputField
+            <LocalizedInput
               label="School"
               value={entry.school}
-              onChange={(v) => onChange({ education: updateItem(profile.education, i, { school: v }) })}
+              onChange={(school) => onChange({ education: updateItem(profile.education, i, { school }) })}
+              locale={locale}
             />
-            <InputField
+            <LocalizedInput
               label="Degree"
               value={entry.degree}
-              onChange={(v) => onChange({ education: updateItem(profile.education, i, { degree: v }) })}
+              onChange={(degree) => onChange({ education: updateItem(profile.education, i, { degree }) })}
+              locale={locale}
             />
-            <InputField
+            <LocalizedInput
               label="Detail"
               value={entry.detail}
-              onChange={(v) => onChange({ education: updateItem(profile.education, i, { detail: v }) })}
+              onChange={(detail) => onChange({ education: updateItem(profile.education, i, { detail }) })}
+              locale={locale}
             />
           </div>
         ))}
@@ -231,10 +247,11 @@ export function ProfileEditor({
       </SectionCard>
 
       <SectionCard title="Focus areas">
-        <StringListEditor
+        <LocalizedListEditor
           label="Focus areas"
           items={profile.focusAreas}
           onChange={(focusAreas) => onChange({ focusAreas })}
+          locale={locale}
           addLabel="Add focus area"
         />
       </SectionCard>

@@ -1,3 +1,4 @@
+import { getDict, type Locale, pick } from "@/lib/i18n";
 import type { Profile, Socials } from "@/lib/siteContent";
 
 import { ButtonLink } from "./ButtonLink";
@@ -10,15 +11,18 @@ type HeroProps = {
   socials: Socials;
   projectCount: number;
   experienceCount: number;
+  locale: Locale;
 };
 
-export function Hero({ profile, socials, projectCount, experienceCount }: HeroProps) {
+export function Hero({ profile, socials, projectCount, experienceCount, locale }: HeroProps) {
+  const dict = getDict(locale);
   const education = profile.education[0];
-  const roleLine = profile.title.split("|")[0]?.trim() || profile.title;
+  const title = pick(profile.title, locale);
+  const roleLine = title.split("|")[0]?.trim() || title;
 
   const stats = [
-    { label: "Projects & builds", value: String(projectCount).padStart(2, "0") },
-    { label: "Internships", value: String(experienceCount).padStart(2, "0") },
+    { label: dict.hero.statsProjects, value: String(projectCount).padStart(2, "0") },
+    { label: dict.hero.statsInternships, value: String(experienceCount).padStart(2, "0") },
   ];
 
   return (
@@ -29,7 +33,7 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full rounded-full bg-accent motion-safe:animate-status-pulse" />
           </span>
-          {profile.availability}
+          {pick(profile.availability, locale)}
         </div>
 
         <div className="mt-8 grid items-start gap-x-10 gap-y-12 lg:grid-cols-12">
@@ -40,7 +44,7 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
               {profile.name}
             </h1>
             <p className="mt-8 max-w-xl text-pretty text-lg leading-relaxed text-ink-dim md:text-xl">
-              {profile.shortIntro}
+              {pick(profile.shortIntro, locale)}
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -49,7 +53,7 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
                 variant="primary"
                 icon={<ArrowRight width={16} height={16} />}
               >
-                View work
+                {dict.hero.viewWork}
               </ButtonLink>
               <ButtonLink
                 href={profile.resume}
@@ -57,7 +61,7 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
                 icon={<FileText width={15} height={15} />}
                 iconPosition="left"
               >
-                Résumé
+                {dict.resume}
               </ButtonLink>
               <span className="flex items-center gap-2">
                 {socials.github && (
@@ -82,7 +86,12 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
           {/* Right: portrait */}
           <div className="lg:col-span-5 lg:pl-6">
             <div className="mx-auto max-w-[20rem] lg:ml-auto lg:mr-0">
-              <Portrait photo={profile.photo} name={profile.name} caption={profile.location} />
+              <Portrait
+                photo={profile.photo}
+                name={profile.name}
+                caption={pick(profile.location, locale)}
+                label={dict.hero.portrait}
+              />
             </div>
           </div>
         </div>
@@ -106,11 +115,11 @@ export function Hero({ profile, socials, projectCount, experienceCount }: HeroPr
         </dl>
         {education && (
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-line py-5">
-            <p className="index-label text-ink-mute">{education.detail}</p>
+            <p className="index-label text-ink-mute">{pick(education.detail, locale)}</p>
             <p className="font-display text-lg font-medium text-ink">
-              {education.school}
+              {pick(education.school, locale)}
               <span className="ml-2 font-sans text-sm font-normal text-ink-dim">
-                {education.degree}
+                {pick(education.degree, locale)}
               </span>
             </p>
           </div>

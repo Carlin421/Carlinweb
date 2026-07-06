@@ -1,25 +1,28 @@
-import { additionalWork, type AdditionalWorkItem } from "@/data/additionalWork";
-import { experience, type ExperienceItem } from "@/data/experience";
+import { additionalWork } from "@/data/additionalWork";
+import { experience } from "@/data/experience";
 import { focusAreas, profile as profileDefaults } from "@/data/profile";
-import { projects, type Project } from "@/data/projects";
-import { skills, type SkillGroup } from "@/data/skills";
+import { projects } from "@/data/projects";
+import { skills } from "@/data/skills";
+import type { Localized } from "@/lib/i18n";
 
-export type { AdditionalWorkItem, ExperienceItem, Project, SkillGroup };
+// Canonical content types. Translatable text fields are `Localized` (a plain
+// string, or a { en, zh } object). Identifiers, URLs, and tech-name lists stay
+// plain strings — they read the same in every language.
 
 export type Education = {
-  school: string;
-  degree: string;
-  detail: string;
+  school: Localized;
+  degree: Localized;
+  detail: Localized;
 };
 
 export type Profile = {
   name: string;
-  title: string;
-  shortIntro: string;
-  searchStatus: string;
-  /** Short text shown in the availability badge, e.g. "Open to 2027 summer internships". */
-  availability: string;
-  location: string;
+  title: Localized;
+  shortIntro: Localized;
+  searchStatus: Localized;
+  /** Short text shown in the availability badge. */
+  availability: Localized;
+  location: Localized;
   email: string;
   github: string;
   linkedin: string;
@@ -27,9 +30,45 @@ export type Profile = {
   resume: string;
   /** Portrait photo URL (uploaded via /admin or committed). Empty = show monogram. */
   photo: string;
-  about: string[];
+  about: Localized[];
   education: Education[];
-  focusAreas: string[];
+  focusAreas: Localized[];
+};
+
+export type Project = {
+  slug: string;
+  title: Localized;
+  category: Localized;
+  summary: Localized;
+  problem: Localized;
+  built: Localized;
+  highlights: Localized[];
+  tags: string[];
+  links?: { label: Localized; href: string }[];
+  imageAlt?: Localized;
+  featured?: boolean;
+};
+
+export type ExperienceItem = {
+  role: Localized;
+  company: string;
+  location: Localized;
+  date: Localized;
+  description: Localized;
+  bullets: Localized[];
+};
+
+export type SkillGroup = {
+  category: Localized;
+  items: string[];
+};
+
+export type AdditionalWorkItem = {
+  title: Localized;
+  category: Localized;
+  description: Localized;
+  evidence: Localized[];
+  tags: string[];
 };
 
 /**
@@ -48,12 +87,7 @@ export type SiteContent = {
 };
 
 export const defaultContent: SiteContent = {
-  profile: {
-    ...profileDefaults,
-    availability: "Open to 2027 summer internships",
-    photo: "",
-    focusAreas,
-  },
+  profile: { ...profileDefaults, focusAreas },
   projects,
   experience,
   skills,

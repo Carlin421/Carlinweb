@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { getDict, type Locale, pick } from "@/lib/i18n";
 import type { Project } from "@/lib/siteContent";
 import { cn } from "@/lib/utils";
 
@@ -13,25 +14,29 @@ import { ArrowUpRight, ChevronDown } from "./icons";
 type ProjectShowcaseProps = {
   projects: Project[];
   imageMap: Record<string, string>;
+  locale: Locale;
 };
 
-const BUCKETS: { id: string; label: string; test: (category: string) => boolean }[] = [
+type BucketId = "ai" | "fullstack" | "automation" | "teaching";
+
+const BUCKETS: { id: BucketId; test: (category: string) => boolean }[] = [
   {
     id: "ai",
-    label: "AI & ML",
     test: (c) => /\b(ai|ml|vision|retrieval|voice|deep learning|llm)\b/i.test(c),
   },
   {
     id: "fullstack",
-    label: "Full-stack",
     test: (c) => /full[- ]stack|web application|platform|product/i.test(c),
   },
-  { id: "automation", label: "Automation", test: (c) => /automation|bot|chatbot/i.test(c) },
-  { id: "teaching", label: "Teaching", test: (c) => /teaching|education|leadership|course/i.test(c) },
+  { id: "automation", test: (c) => /automation|bot|chatbot/i.test(c) },
+  { id: "teaching", test: (c) => /teaching|education|leadership|course/i.test(c) },
 ];
 
+// Bucket on the English category so the classification is stable regardless of
+// the display language.
 function bucketOf(project: Project): string {
-  return BUCKETS.find((bucket) => bucket.test(project.category))?.id ?? "other";
+  const category = pick(project.category, "en");
+  return BUCKETS.find((bucket) => bucket.test(category))?.id ?? "other";
 }
 
 /** The detail body shown in the desktop spotlight and the mobile expand. */
@@ -39,41 +44,46 @@ function ProjectDetail({
   project,
   imageSrc,
   index,
+  locale,
 }: {
   project: Project;
   imageSrc?: string;
   index: number;
+  locale: Locale;
 }) {
+  const dict = getDict(locale);
   const links = project.links ?? [];
   return (
     <div>
       <div className="relative aspect-[16/10] overflow-hidden rounded-sm border border-line bg-surface-2">
-        <ProjectMedia project={project} imageSrc={imageSrc} index={index} />
+        <ProjectMedia project={project} imageSrc={imageSrc} index={index} locale={locale} />
       </div>
 
-      <p className="mt-5 index-label text-accent">{project.category}</p>
-      <p className="mt-3 text-pretty text-sm leading-relaxed text-ink-dim">{project.summary}</p>
+      <p className="mt-5 index-label text-accent">{pick(project.category, locale)}</p>
+      <p className="mt-3 text-pretty text-sm leading-relaxed text-ink-dim">
+        {pick(project.summary, locale)}
+      </p>
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
         <div>
-          <h4 className="index-label text-ink-mute">Problem</h4>
-          <p className="mt-2 text-sm leading-relaxed text-ink-dim">{project.problem}</p>
+          <h4 className="index-label text-ink-mute">{dict.work.problem}</h4>
+          <p className="mt-2 text-sm leading-relaxed text-ink-dim">{pick(project.problem, locale)}</p>
         </div>
         <div>
-          <h4 className="index-label text-ink-mute">Approach</h4>
-          <p className="mt-2 text-sm leading-relaxed text-ink-dim">{project.built}</p>
+          <h4 className="index-label text-ink-mute">{dict.work.approach}</h4>
+          <p className="mt-2 text-sm leading-relaxed text-ink-dim">{pick(project.built, locale)}</p>
         </div>
       </div>
 
       {project.highlights.length > 0 && (
         <ul className="mt-5 space-y-2">
-          {project.highlights.slice(0, 4).map((highlight) => (
+          {project.highlights.slice(0, 4).map((highlight, i) => (
             <li
-              key={highlight}
+              key={i}
               className="grid grid-cols-[auto_1fr] gap-3 text-sm leading-relaxed text-ink-dim"
             >
               <span aria-hidden="true" className="mt-2 h-px w-3 bg-accent" />
-              {highlight}
+              {pick(highlight, locale)}
             </li>
           ))}
         </ul>
@@ -96,7 +106,7 @@ function ProjectDetail({
               icon={<ArrowUpRight width={15} height={15} />}
               className="text-sm"
             >
-              {link.label}
+              {pick(link.label, locale)}
             </ButtonLink>
           ))}
         </div>
@@ -105,7 +115,8 @@ function ProjectDetail({
   );
 }
 
-export function ProjectShowcase({ projects, imageMap }: ProjectShowcaseProps) {
+export function ProjectShowcase({ projects, imageMap, locale }: ProjectShowcaseProps) {
+  const dict = getDict(locale);
   const [filter, setFilter] = useState("all");
   const featuredSlug = (projects.find((p) => p.featured) ?? projects[0])?.slug ?? "";
   // Desktop spotlight follows hover/focus; mobile uses tap-to-expand.
@@ -122,23 +133,22 @@ export function ProjectShowcase({ projects, imageMap }: ProjectShowcaseProps) {
   }, [projects]);
 
   const filters = [
-    { id: "all", label: "All" },
-    ...BUCKETS.filter((bucket) => counts[bucket.id]),
-    ...(counts.other ? [{ id: "other", label: "Other" }] : []),
+    { id: "all", label: dict.work.filters.all },
+    ...BUCKETS.filter((bucket) => counts[bucket.id]).map((bucket) => ({
+      id: bucket.id,
+      label: dict.work.filters[bucket.id],
+    })),
+    ...(counts.other ? [{ id: "other", label: dict.work.filters.other }] : []),
   ];
 
   const visible = projects.filter((p) => filter === "all" || bucketOf(p) === filter);
   const active = visible.find((p) => p.slug === activeSlug) ?? visible[0];
-  const activeLabel = filters.find((item) => item.id === filter)?.label ?? "All";
+  const activeLabel = filters.find((item) => item.id === filter)?.label ?? dict.work.filters.all;
 
   return (
     <div>
       <p role="status" aria-live="polite" className="sr-only">
-        {visible.length === 0
-          ? `No projects in ${activeLabel}`
-          : `Showing ${visible.length} project${visible.length === 1 ? "" : "s"}${
-              filter === "all" ? "" : ` in ${activeLabel}`
-            }`}
+        {dict.work.showing(visible.length, filter === "all" ? null : activeLabel)}
       </p>
 
       {/* Filter row */}
@@ -199,17 +209,17 @@ export function ProjectShowcase({ projects, imageMap }: ProjectShowcaseProps) {
                         isActive ? "text-accent" : "text-ink group-hover:text-accent"
                       )}
                     >
-                      {project.title}
+                      {pick(project.title, locale)}
                     </span>
                     {project.featured && (
                       <span className="mt-1 inline-block font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute">
-                        Featured
+                        {dict.work.featured}
                       </span>
                     )}
                   </span>
                   <span className="flex items-center gap-3">
                     <span className="hidden max-w-[11rem] truncate text-right font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute sm:block">
-                      {project.category.split("/")[0]?.trim()}
+                      {pick(project.category, locale).split("/")[0]?.trim()}
                     </span>
                     <ArrowUpRight
                       width={18}
@@ -238,7 +248,12 @@ export function ProjectShowcase({ projects, imageMap }: ProjectShowcaseProps) {
                   className={cn("overflow-hidden lg:hidden", isOpen ? "block" : "hidden")}
                 >
                   <div className="pb-8 pt-1 motion-safe:animate-fade-up">
-                    <ProjectDetail project={project} imageSrc={imageMap[project.slug]} index={index} />
+                    <ProjectDetail
+                      project={project}
+                      imageSrc={imageMap[project.slug]}
+                      index={index}
+                      locale={locale}
+                    />
                   </div>
                 </div>
               </li>
@@ -255,6 +270,7 @@ export function ProjectShowcase({ projects, imageMap }: ProjectShowcaseProps) {
                   project={active}
                   imageSrc={imageMap[active.slug]}
                   index={projects.indexOf(active)}
+                  locale={locale}
                 />
               </div>
             </div>

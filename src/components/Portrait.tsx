@@ -4,6 +4,8 @@ type PortraitProps = {
   photo: string;
   name: string;
   caption: string;
+  /** Translated label for the empty-frame placeholder. */
+  label: string;
 };
 
 function initials(name: string): string {
@@ -19,7 +21,7 @@ function initials(name: string): string {
 }
 
 /** Captioned portrait frame. Falls back to a designed monogram when no photo is set. */
-export function Portrait({ photo, name, caption }: PortraitProps) {
+export function Portrait({ photo, name, caption, label }: PortraitProps) {
   return (
     <figure className="relative">
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-line-strong bg-surface-2">
@@ -43,9 +45,9 @@ export function Portrait({ photo, name, caption }: PortraitProps) {
               {initials(name)}
             </span>
             <span className="absolute bottom-3 left-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-mute">
-              Portrait
+              {label}
             </span>
-            <span className="sr-only">Portrait placeholder</span>
+            <span className="sr-only">{label}</span>
           </div>
         )}
         {/* Corner accent tick — small Swiss registration mark. */}

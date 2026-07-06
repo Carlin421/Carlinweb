@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { inputClass, labelClass } from "./styles";
 
 type FieldProps = {
-  label: string;
+  label: ReactNode;
   htmlFor?: string;
   hint?: string;
   error?: string;

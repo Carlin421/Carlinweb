@@ -2,15 +2,16 @@
 
 import { useState, type ChangeEvent } from "react";
 
+import { pick, setLocalized, type Locale } from "@/lib/i18n";
 import type { Project } from "@/lib/siteContent";
 import { cn } from "@/lib/utils";
 
 import { moveItem, removeItem, updateItem } from "./arrayUtils";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { CommaListField, Field, InputField, TextAreaField, TextInput } from "./fields";
+import { CommaListField, Field, InputField, TextInput } from "./fields";
+import { LocalizedInput, LocalizedListEditor, LocalizedTextArea } from "./LocalizedField";
 import { MoveButtons } from "./MoveButtons";
 import { SectionCard } from "./SectionCard";
-import { StringListEditor } from "./StringListEditor";
 import { useToast } from "./Toast";
 import { addButtonClass, fileInputClass, iconButtonClass, secondaryButtonClass } from "./styles";
 
@@ -41,9 +42,16 @@ type ProjectsEditorProps = {
   onChange: (projects: Project[]) => void;
   imageMap: Record<string, string>;
   onUnauthorized: () => void;
+  locale: Locale;
 };
 
-export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }: ProjectsEditorProps) {
+export function ProjectsEditor({
+  projects,
+  onChange,
+  imageMap,
+  onUnauthorized,
+  locale,
+}: ProjectsEditorProps) {
   const toast = useToast();
   const [editing, setEditing] = useState<number | null>(null);
   // Auto-derive the slug from the title for brand-new projects until it's edited by hand.
@@ -132,12 +140,18 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
         </button>
 
         <SectionCard title="Basics">
-          <InputField
+          <LocalizedInput
             label="Title"
             value={project.title}
+            locale={locale}
             onChange={(title) => {
-              if (autoSlug) onChange(updateItem(projects, index, { title, slug: slugify(title) }));
-              else patch({ title });
+              // Slug is a plain ID; auto-derive it from the English title so it
+              // stays stable no matter which language is being edited.
+              if (autoSlug) {
+                onChange(updateItem(projects, index, { title, slug: slugify(pick(title, "en")) }));
+              } else {
+                patch({ title });
+              }
             }}
           />
           <InputField
@@ -151,10 +165,11 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
             error={slugError}
             hint="Stable ID used for the project image. Lowercase letters, numbers, hyphens."
           />
-          <InputField
+          <LocalizedInput
             label="Category"
             value={project.category}
-            onChange={(v) => patch({ category: v })}
+            locale={locale}
+            onChange={(category) => patch({ category })}
             placeholder="AI Systems / Retrieval / Internal Tools"
           />
           <div className="rounded-xl border border-line bg-base-2 p-4">
@@ -174,31 +189,35 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
         </SectionCard>
 
         <SectionCard title="Story">
-          <TextAreaField
+          <LocalizedTextArea
             label="Summary"
             value={project.summary}
-            onChange={(v) => patch({ summary: v })}
+            onChange={(summary) => patch({ summary })}
+            locale={locale}
             rows={3}
           />
-          <TextAreaField
+          <LocalizedTextArea
             label="Problem"
             value={project.problem}
-            onChange={(v) => patch({ problem: v })}
+            onChange={(problem) => patch({ problem })}
+            locale={locale}
             rows={3}
           />
-          <TextAreaField
+          <LocalizedTextArea
             label="What I built"
             value={project.built}
-            onChange={(v) => patch({ built: v })}
+            onChange={(built) => patch({ built })}
+            locale={locale}
             rows={3}
           />
         </SectionCard>
 
         <SectionCard title="Details">
-          <StringListEditor
+          <LocalizedListEditor
             label="Highlights"
             items={project.highlights}
             onChange={(highlights) => patch({ highlights })}
+            locale={locale}
             addLabel="Add highlight"
             multiline
             rows={2}
@@ -217,11 +236,15 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
             {links.map((link, i) => (
               <div key={i} className="flex flex-col gap-2 sm:flex-row">
                 <TextInput
-                  aria-label={`Link ${i + 1} label`}
-                  placeholder="Label"
-                  value={link.label}
+                  aria-label={`Link ${i + 1} label (${locale === "zh" ? "Chinese" : "English"})`}
+                  placeholder={locale === "zh" ? "標籤" : "Label"}
+                  value={pick(link.label, locale)}
                   onChange={(event) =>
-                    patch({ links: updateItem(links, i, { label: event.target.value }) })
+                    patch({
+                      links: updateItem(links, i, {
+                        label: setLocalized(link.label, locale, event.target.value),
+                      }),
+                    })
                   }
                 />
                 <TextInput
@@ -261,7 +284,7 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={images[project.slug]}
-              alt={project.imageAlt || `Current image for ${project.title || project.slug}`}
+              alt={pick(project.imageAlt, locale) || `Current image for ${pick(project.title, locale) || project.slug}`}
               className="h-40 w-full max-w-sm rounded-xl border border-line object-cover"
             />
           ) : (
@@ -284,10 +307,11 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
           <p aria-live="polite" role="status" className="min-h-4 text-xs text-ink-dim">
             {uploading ? "Uploading…" : ""}
           </p>
-          <InputField
+          <LocalizedInput
             label="Image alt text"
-            value={project.imageAlt ?? ""}
-            onChange={(v) => patch({ imageAlt: v })}
+            value={project.imageAlt}
+            onChange={(imageAlt) => patch({ imageAlt })}
+            locale={locale}
             hint="Describes the image for screen readers and when it fails to load."
           />
         </SectionCard>
@@ -310,7 +334,10 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
       </div>
 
       <ul className="space-y-3">
-        {projects.map((project, i) => (
+        {projects.map((project, i) => {
+          const titleText = pick(project.title, locale);
+          const categoryText = pick(project.category, locale);
+          return (
           <li
             key={i}
             className="flex items-center gap-4 rounded-xl border border-line bg-surface p-4 shadow-card"
@@ -337,20 +364,20 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
                     ★
                   </span>
                 )}
-                <span className="truncate">{project.title || "Untitled project"}</span>
+                <span className="truncate">{titleText || "Untitled project"}</span>
               </p>
               <p className="truncate font-mono text-[11px] text-ink-mute">
                 {project.slug || "no-slug-yet"}
               </p>
-              {project.category && (
-                <p className="truncate text-xs text-ink-dim">{project.category}</p>
+              {categoryText && (
+                <p className="truncate text-xs text-ink-dim">{categoryText}</p>
               )}
             </div>
             <MoveButtons
               index={i}
               count={projects.length}
               onMove={(index, dir) => onChange(moveItem(projects, index, dir))}
-              label={project.title || `project ${i + 1}`}
+              label={titleText || `project ${i + 1}`}
             />
             <button
               type="button"
@@ -361,14 +388,15 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
             </button>
             <button
               type="button"
-              aria-label={`Delete ${project.title || `project ${i + 1}`}`}
+              aria-label={`Delete ${titleText || `project ${i + 1}`}`}
               onClick={() => setConfirmDelete(i)}
               className={iconButtonClass}
             >
               <span aria-hidden="true">✕</span>
             </button>
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       <ConfirmDialog
@@ -376,7 +404,7 @@ export function ProjectsEditor({ projects, onChange, imageMap, onUnauthorized }:
         title="Delete this project?"
         description={
           confirmDelete !== null
-            ? `"${projects[confirmDelete]?.title || "Untitled project"}" will be removed. This takes effect when you save.`
+            ? `"${pick(projects[confirmDelete]?.title, locale) || "Untitled project"}" will be removed. This takes effect when you save.`
             : ""
         }
         confirmLabel="Delete project"

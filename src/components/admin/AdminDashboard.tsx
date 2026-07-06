@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import type { Locale } from "@/lib/i18n";
 import type { Profile, SiteContent } from "@/lib/siteContent";
 import { cn } from "@/lib/utils";
 
@@ -38,11 +39,57 @@ export function AdminDashboard({ initialContent, imageMap }: AdminDashboardProps
   );
 }
 
+const LOCALE_OPTIONS: { id: Locale; label: string }[] = [
+  { id: "en", label: "EN" },
+  { id: "zh", label: "中文" },
+];
+
+/** Compact segmented EN / 中文 control that sets which language the editors show. */
+function LocaleToggle({
+  locale,
+  onChange,
+}: {
+  locale: Locale;
+  onChange: (locale: Locale) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Editing language"
+      className="flex items-center rounded-lg border border-line bg-surface p-0.5"
+    >
+      {LOCALE_OPTIONS.map((option) => {
+        const active = locale === option.id;
+        return (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onChange(option.id)}
+            aria-pressed={active}
+            className={cn(
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+              active
+                ? "bg-accent/10 text-accent"
+                : "text-ink-dim hover:text-ink"
+            )}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function DashboardShell({ initialContent, imageMap }: AdminDashboardProps) {
   const toast = useToast();
   const [content, setContent] = useState(initialContent);
   const [savedJson, setSavedJson] = useState(() => JSON.stringify(initialContent));
   const [tab, setTab] = useState<TabId>("profile");
+  // Which language every localized text input shows/edits. Both languages live
+  // in the single content object; this only changes what's displayed.
+  const [adminLocale, setAdminLocale] = useState<Locale>("en");
   const [saving, setSaving] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
   // Bumped on discard/reset so editors drop any local draft state (remount via key).
@@ -188,6 +235,7 @@ function DashboardShell({ initialContent, imageMap }: AdminDashboardProps) {
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-3 md:gap-4">
+            <LocaleToggle locale={adminLocale} onChange={setAdminLocale} />
             <a href="/" className={cn(linkClass, "text-sm")}>
               View site <span aria-hidden="true">↗</span>
             </a>
@@ -228,6 +276,17 @@ function DashboardShell({ initialContent, imageMap }: AdminDashboardProps) {
 
         <main className="min-w-0 max-w-4xl flex-1">
           <h1 className="font-display text-2xl text-ink">{activeTab.label}</h1>
+          {tab !== "resume" && (
+            <p className="mt-1 text-sm text-ink-dim" aria-live="polite">
+              Editing the{" "}
+              <span className="font-medium text-ink">
+                {adminLocale === "zh" ? "中文" : "English"}
+              </span>{" "}
+              version. Use the {" "}
+              <span className="font-mono text-xs">EN / 中文</span> toggle above to switch languages —
+              both are saved together.
+            </p>
+          )}
           <div key={revision} className="mt-5 animate-fade-in">
             {tab === "profile" && (
               <ProfileEditor
@@ -235,6 +294,7 @@ function DashboardShell({ initialContent, imageMap }: AdminDashboardProps) {
                 onChange={updateProfile}
                 onResetAll={resetAll}
                 onUnauthorized={onUnauthorized}
+                locale={adminLocale}
               />
             )}
             {tab === "projects" && (
@@ -243,24 +303,28 @@ function DashboardShell({ initialContent, imageMap }: AdminDashboardProps) {
                 onChange={(projects) => setContent((c) => ({ ...c, projects }))}
                 imageMap={imageMap}
                 onUnauthorized={onUnauthorized}
+                locale={adminLocale}
               />
             )}
             {tab === "experience" && (
               <ExperienceEditor
                 items={content.experience}
                 onChange={(experience) => setContent((c) => ({ ...c, experience }))}
+                locale={adminLocale}
               />
             )}
             {tab === "skills" && (
               <SkillsEditor
                 groups={content.skills}
                 onChange={(skills) => setContent((c) => ({ ...c, skills }))}
+                locale={adminLocale}
               />
             )}
             {tab === "activities" && (
               <ActivitiesEditor
                 items={content.additionalWork}
                 onChange={(additionalWork) => setContent((c) => ({ ...c, additionalWork }))}
+                locale={adminLocale}
               />
             )}
             {tab === "resume" && (

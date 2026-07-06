@@ -1,20 +1,23 @@
+import { getDict, type Locale, pick } from "@/lib/i18n";
 import type { ExperienceItem } from "@/lib/siteContent";
 
 import { SectionHeading } from "./SectionHeading";
 
 type ExperienceProps = {
   experience: ExperienceItem[];
+  locale: Locale;
 };
 
-export function Experience({ experience }: ExperienceProps) {
+export function Experience({ experience, locale }: ExperienceProps) {
+  const dict = getDict(locale);
   return (
     <section id="experience" className="scroll-mt-20 bg-base-2/60">
       <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-28">
         <SectionHeading
           index="03"
-          eyebrow="Experience"
-          title="Where I've worked"
-          description="Software engineering internships in AI support systems and full-stack web development."
+          eyebrow={dict.experience.eyebrow}
+          title={dict.experience.title}
+          description={dict.experience.description}
         />
 
         <div className="border-t border-line">
@@ -30,7 +33,7 @@ export function Experience({ experience }: ExperienceProps) {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
-                    {item.date}
+                    {pick(item.date, locale)}
                   </span>
                 </p>
               </div>
@@ -38,26 +41,26 @@ export function Experience({ experience }: ExperienceProps) {
               {/* Right: role + detail */}
               <div className="md:col-span-9">
                 <h3 className="font-display text-2xl font-medium tracking-tight text-ink md:text-3xl">
-                  {item.role}
+                  {pick(item.role, locale)}
                 </h3>
                 <p className="mt-1.5 text-sm text-ink-dim">
                   <span className="font-medium text-accent">{item.company}</span>
                   <span aria-hidden="true" className="mx-2 text-line-strong">
                     /
                   </span>
-                  {item.location}
+                  {pick(item.location, locale)}
                 </p>
                 <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-ink-dim">
-                  {item.description}
+                  {pick(item.description, locale)}
                 </p>
                 <ul className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
-                  {item.bullets.map((bullet) => (
+                  {item.bullets.map((bullet, i) => (
                     <li
-                      key={bullet}
+                      key={i}
                       className="grid grid-cols-[auto_1fr] gap-3 text-sm leading-relaxed text-ink-dim"
                     >
                       <span aria-hidden="true" className="mt-2 h-px w-3 bg-accent" />
-                      {bullet}
+                      {pick(bullet, locale)}
                     </li>
                   ))}
                 </ul>

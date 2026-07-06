@@ -1,3 +1,4 @@
+import type { Localized } from "./i18n";
 import type {
   AdditionalWorkItem,
   Education,
@@ -40,6 +41,43 @@ function readString(value: unknown, path: string, errors: string[], required = f
   return trimmed.slice(0, MAX_STRING);
 }
 
+/**
+ * Reads a translatable text field: either a plain string (normalized to a
+ * trimmed string) or an object with optional `en`/`zh` string keys. Each
+ * language is trimmed and capped; empty keys are dropped. `required` demands at
+ * least one non-empty language. The result is rebuilt field-by-field, so
+ * unknown keys are stripped and the shape always matches `Localized`.
+ */
+function readLocalized(
+  value: unknown,
+  path: string,
+  errors: string[],
+  required = false
+): Localized {
+  if (value === undefined || value === null) {
+    if (required) errors.push(`${path} is required.`);
+    return "";
+  }
+  if (typeof value === "string") {
+    return readString(value, path, errors, required);
+  }
+  if (!isRecord(value)) {
+    errors.push(`${path} must be a string or an object with en/zh text.`);
+    return "";
+  }
+  const result: { en?: string; zh?: string } = {};
+  for (const lang of ["en", "zh"] as const) {
+    const raw = value[lang];
+    if (raw === undefined || raw === null) continue;
+    const text = readString(raw, `${path}.${lang}`, errors);
+    if (text.length > 0) result[lang] = text;
+  }
+  if (required && !result.en && !result.zh) {
+    errors.push(`${path} must not be empty in at least one language.`);
+  }
+  return result;
+}
+
 function readStringArray(value: unknown, path: string, errors: string[]): string[] {
   if (value === undefined || value === null) return [];
   if (!Array.isArray(value)) {
@@ -53,6 +91,25 @@ function readStringArray(value: unknown, path: string, errors: string[]): string
     .slice(0, MAX_LIST)
     .map((item, index) => readString(item, `${path}[${index}]`, errors))
     .filter((item) => item.length > 0);
+}
+
+/** Has this localized value any non-empty text in either language? */
+const hasLocalizedText = (value: Localized): boolean =>
+  typeof value === "string" ? value.length > 0 : Boolean(value.en || value.zh);
+
+function readLocalizedArray(value: unknown, path: string, errors: string[]): Localized[] {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value)) {
+    errors.push(`${path} must be an array.`);
+    return [];
+  }
+  if (value.length > MAX_LIST) {
+    errors.push(`${path} has more than ${MAX_LIST} items.`);
+  }
+  return value
+    .slice(0, MAX_LIST)
+    .map((item, index) => readLocalized(item, `${path}[${index}]`, errors))
+    .filter(hasLocalizedText);
 }
 
 function readList<T>(
@@ -79,9 +136,9 @@ function readEducation(value: unknown, path: string, errors: string[]): Educatio
     return { school: "", degree: "", detail: "" };
   }
   return {
-    school: readString(value.school, `${path}.school`, errors),
-    degree: readString(value.degree, `${path}.degree`, errors),
-    detail: readString(value.detail, `${path}.detail`, errors),
+    school: readLocalized(value.school, `${path}.school`, errors),
+    degree: readLocalized(value.degree, `${path}.degree`, errors),
+    detail: readLocalized(value.detail, `${path}.detail`, errors),
   };
 }
 
@@ -90,19 +147,19 @@ function readProfile(value: unknown, errors: string[]): Profile {
   const record = isRecord(value) ? value : {};
   return {
     name: readString(record.name, "profile.name", errors, true),
-    title: readString(record.title, "profile.title", errors, true),
-    shortIntro: readString(record.shortIntro, "profile.shortIntro", errors),
-    searchStatus: readString(record.searchStatus, "profile.searchStatus", errors),
-    availability: readString(record.availability, "profile.availability", errors),
-    location: readString(record.location, "profile.location", errors),
+    title: readLocalized(record.title, "profile.title", errors, true),
+    shortIntro: readLocalized(record.shortIntro, "profile.shortIntro", errors),
+    searchStatus: readLocalized(record.searchStatus, "profile.searchStatus", errors),
+    availability: readLocalized(record.availability, "profile.availability", errors),
+    location: readLocalized(record.location, "profile.location", errors),
     email: readString(record.email, "profile.email", errors),
     github: readString(record.github, "profile.github", errors),
     linkedin: readString(record.linkedin, "profile.linkedin", errors),
     resume: readString(record.resume, "profile.resume", errors),
     photo: readString(record.photo, "profile.photo", errors),
-    about: readStringArray(record.about, "profile.about", errors),
+    about: readLocalizedArray(record.about, "profile.about", errors),
     education: readList(record.education, "profile.education", errors, MAX_LIST, readEducation),
-    focusAreas: readStringArray(record.focusAreas, "profile.focusAreas", errors),
+    focusAreas: readLocalizedArray(record.focusAreas, "profile.focusAreas", errors),
   };
 }
 
@@ -110,14 +167,14 @@ function readLink(
   value: unknown,
   path: string,
   errors: string[]
-): { label: string; href: string } {
+): { label: Localized; href: string } {
   if (!isRecord(value)) {
     errors.push(`${path} must be an object with label and href.`);
     return { label: "", href: "" };
   }
-  const label = readString(value.label, `${path}.label`, errors);
+  const label = readLocalized(value.label, `${path}.label`, errors);
   const href = readString(value.href, `${path}.href`, errors);
-  if (label.length > 0 && href.length === 0) {
+  if (hasLocalizedText(label) && href.length === 0) {
     errors.push(`${path}.href must not be empty.`);
   }
   return { label, href };
@@ -137,22 +194,22 @@ function readProject(value: unknown, path: string, errors: string[]): Project {
 
   // Fully empty link rows are dropped instead of rejected.
   const links = readList(record.links, `${path}.links`, errors, MAX_LIST, readLink).filter(
-    (link) => link.label.length > 0 || link.href.length > 0
+    (link) => hasLocalizedText(link.label) || link.href.length > 0
   );
-  const imageAlt = readString(record.imageAlt, `${path}.imageAlt`, errors);
+  const imageAlt = readLocalized(record.imageAlt, `${path}.imageAlt`, errors);
 
   const project: Project = {
     slug,
-    title: readString(record.title, `${path}.title`, errors, true),
-    category: readString(record.category, `${path}.category`, errors),
-    summary: readString(record.summary, `${path}.summary`, errors),
-    problem: readString(record.problem, `${path}.problem`, errors),
-    built: readString(record.built, `${path}.built`, errors),
-    highlights: readStringArray(record.highlights, `${path}.highlights`, errors),
+    title: readLocalized(record.title, `${path}.title`, errors, true),
+    category: readLocalized(record.category, `${path}.category`, errors),
+    summary: readLocalized(record.summary, `${path}.summary`, errors),
+    problem: readLocalized(record.problem, `${path}.problem`, errors),
+    built: readLocalized(record.built, `${path}.built`, errors),
+    highlights: readLocalizedArray(record.highlights, `${path}.highlights`, errors),
     tags: readStringArray(record.tags, `${path}.tags`, errors),
   };
   if (links.length > 0) project.links = links;
-  if (imageAlt.length > 0) project.imageAlt = imageAlt;
+  if (hasLocalizedText(imageAlt)) project.imageAlt = imageAlt;
   if (record.featured === true) project.featured = true;
   return project;
 }
@@ -161,12 +218,12 @@ function readExperience(value: unknown, path: string, errors: string[]): Experie
   if (!isRecord(value)) errors.push(`${path} must be an object.`);
   const record = isRecord(value) ? value : {};
   return {
-    role: readString(record.role, `${path}.role`, errors),
+    role: readLocalized(record.role, `${path}.role`, errors),
     company: readString(record.company, `${path}.company`, errors),
-    location: readString(record.location, `${path}.location`, errors),
-    date: readString(record.date, `${path}.date`, errors),
-    description: readString(record.description, `${path}.description`, errors),
-    bullets: readStringArray(record.bullets, `${path}.bullets`, errors),
+    location: readLocalized(record.location, `${path}.location`, errors),
+    date: readLocalized(record.date, `${path}.date`, errors),
+    description: readLocalized(record.description, `${path}.description`, errors),
+    bullets: readLocalizedArray(record.bullets, `${path}.bullets`, errors),
   };
 }
 
@@ -174,7 +231,7 @@ function readSkillGroup(value: unknown, path: string, errors: string[]): SkillGr
   if (!isRecord(value)) errors.push(`${path} must be an object.`);
   const record = isRecord(value) ? value : {};
   return {
-    category: readString(record.category, `${path}.category`, errors),
+    category: readLocalized(record.category, `${path}.category`, errors),
     items: readStringArray(record.items, `${path}.items`, errors),
   };
 }
@@ -183,10 +240,10 @@ function readAdditionalWork(value: unknown, path: string, errors: string[]): Add
   if (!isRecord(value)) errors.push(`${path} must be an object.`);
   const record = isRecord(value) ? value : {};
   return {
-    title: readString(record.title, `${path}.title`, errors),
-    category: readString(record.category, `${path}.category`, errors),
-    description: readString(record.description, `${path}.description`, errors),
-    evidence: readStringArray(record.evidence, `${path}.evidence`, errors),
+    title: readLocalized(record.title, `${path}.title`, errors),
+    category: readLocalized(record.category, `${path}.category`, errors),
+    description: readLocalized(record.description, `${path}.description`, errors),
+    evidence: readLocalizedArray(record.evidence, `${path}.evidence`, errors),
     tags: readStringArray(record.tags, `${path}.tags`, errors),
   };
 }

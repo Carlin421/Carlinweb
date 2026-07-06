@@ -1,23 +1,32 @@
-export type SkillGroup = {
-  category: string;
-  items: string[];
-};
+import type { SkillGroup } from "@/lib/siteContent";
 
 export const skills: SkillGroup[] = [
   {
-    category: "Languages",
+    category: {
+      en: "Languages",
+      zh: "程式語言",
+    },
     items: ["TypeScript", "JavaScript", "Python", "C#", "SQL", "HTML", "CSS"],
   },
   {
-    category: "Frontend",
+    category: {
+      en: "Frontend",
+      zh: "前端",
+    },
     items: ["React", "Next.js", "Angular", "Tailwind CSS", "Bootstrap", "Responsive Design"],
   },
   {
-    category: "Backend",
+    category: {
+      en: "Backend",
+      zh: "後端",
+    },
     items: ["ASP.NET Core", "Django", "Flask", "REST APIs", "JWT Authentication", "Webhooks"],
   },
   {
-    category: "AI / Data / Retrieval",
+    category: {
+      en: "AI / Data / Retrieval",
+      zh: "AI / 資料 / 檢索",
+    },
     items: [
       "LLM APIs",
       "RAG",
@@ -32,7 +41,10 @@ export const skills: SkillGroup[] = [
     ],
   },
   {
-    category: "Data Processing / Crawling",
+    category: {
+      en: "Data Processing / Crawling",
+      zh: "資料處理 / 網路爬蟲",
+    },
     items: [
       "Pandas",
       "NumPy",
@@ -45,11 +57,17 @@ export const skills: SkillGroup[] = [
     ],
   },
   {
-    category: "Databases",
+    category: {
+      en: "Databases",
+      zh: "資料庫",
+    },
     items: ["SQL Server", "MySQL", "Firebase", "SQLite", "PostgreSQL"],
   },
   {
-    category: "Tools / Platforms",
+    category: {
+      en: "Tools / Platforms",
+      zh: "工具 / 平台",
+    },
     items: [
       "Git",
       "GitHub",

@@ -2,13 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { getDict, type Locale } from "@/lib/i18n";
+
 import { Check, Copy } from "./icons";
 
 type CopyEmailButtonProps = {
   email: string;
+  locale: Locale;
 };
 
-export function CopyEmailButton({ email }: CopyEmailButtonProps) {
+export function CopyEmailButton({ email, locale }: CopyEmailButtonProps) {
+  const dict = getDict(locale);
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,11 +44,11 @@ export function CopyEmailButton({ email }: CopyEmailButtonProps) {
     <button
       type="button"
       onClick={copy}
-      aria-label={`Copy email address ${email}`}
+      aria-label={`${dict.contact.copyAria} ${email}`}
       className="group inline-flex items-center gap-2 rounded-sm border border-line-strong px-4 py-2 font-mono text-[13px] text-ink transition-colors duration-200 hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base"
     >
       {copied ? <Check width={14} height={14} /> : <Copy width={14} height={14} />}
-      {copied ? "Copied" : email}
+      {copied ? dict.contact.copied : email}
       <span aria-live="polite" className="sr-only">
         {copied ? "Email address copied to clipboard" : ""}
       </span>

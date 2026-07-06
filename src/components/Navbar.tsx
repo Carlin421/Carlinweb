@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import { getDict, type Locale } from "@/lib/i18n";
 import type { Socials } from "@/lib/siteContent";
 import { cn } from "@/lib/utils";
 
+import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { Github, Linkedin, Menu, X } from "./icons";
 
@@ -13,18 +15,22 @@ type NavbarProps = {
   name: string;
   socials: Socials;
   resume: string;
+  locale: Locale;
 };
 
-const NAV_ITEMS = [
-  { href: "#about", id: "about", label: "About", num: "01" },
-  { href: "#work", id: "work", label: "Work", num: "02" },
-  { href: "#experience", id: "experience", label: "Experience", num: "03" },
-  { href: "#skills", id: "skills", label: "Skills", num: "04" },
-  { href: "#activities", id: "activities", label: "Activities", num: "05" },
-  { href: "#contact", id: "contact", label: "Contact", num: "06" },
+type NavKey = "about" | "work" | "experience" | "skills" | "activities" | "contact";
+
+const NAV_ITEMS: { href: string; id: string; key: NavKey; num: string }[] = [
+  { href: "#about", id: "about", key: "about", num: "01" },
+  { href: "#work", id: "work", key: "work", num: "02" },
+  { href: "#experience", id: "experience", key: "experience", num: "03" },
+  { href: "#skills", id: "skills", key: "skills", num: "04" },
+  { href: "#activities", id: "activities", key: "activities", num: "05" },
+  { href: "#contact", id: "contact", key: "contact", num: "06" },
 ];
 
-export function Navbar({ name, socials, resume }: NavbarProps) {
+export function Navbar({ name, socials, resume, locale }: NavbarProps) {
+  const dict = getDict(locale);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -130,13 +136,14 @@ export function Navbar({ name, socials, resume }: NavbarProps) {
                   >
                     {item.num}
                   </span>
-                  {item.label}
+                  {dict.nav[item.key]}
                 </a>
               </li>
             ))}
           </ul>
 
           <div className="flex items-center gap-2.5">
+            <LanguageToggle locale={locale} />
             <ThemeToggle />
             <a
               href={resume}
@@ -144,14 +151,14 @@ export function Navbar({ name, socials, resume }: NavbarProps) {
               rel="noopener noreferrer"
               className="hidden items-center rounded-sm border border-line-strong px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink no-underline transition-colors duration-200 hover:border-accent hover:text-accent md:inline-flex"
             >
-              Résumé
+              {dict.resume}
             </a>
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-navigation"
-              aria-label={open ? "Close menu" : "Open menu"}
+              aria-label={open ? dict.closeMenu : dict.openMenu}
               className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-line-strong text-ink-dim transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:hidden"
             >
               {open ? <X width={18} height={18} /> : <Menu width={18} height={18} />}
@@ -173,7 +180,7 @@ export function Navbar({ name, socials, resume }: NavbarProps) {
                     )}
                   >
                     <span className="text-ink-mute">{item.num}</span>
-                    {item.label}
+                    {dict.nav[item.key]}
                   </a>
                 </li>
               ))}
@@ -185,7 +192,7 @@ export function Navbar({ name, socials, resume }: NavbarProps) {
                   className="rounded-sm border border-line-strong px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink no-underline"
                   onClick={() => setOpen(false)}
                 >
-                  Résumé
+                  {dict.resume}
                 </a>
                 {socials.github && (
                   <a

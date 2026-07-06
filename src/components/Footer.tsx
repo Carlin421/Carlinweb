@@ -1,11 +1,14 @@
+import { getDict, type Locale } from "@/lib/i18n";
 import type { Profile, Socials } from "@/lib/siteContent";
 
 type FooterProps = {
   profile: Profile;
   socials: Socials;
+  locale: Locale;
 };
 
-export function Footer({ profile, socials }: FooterProps) {
+export function Footer({ profile, socials, locale }: FooterProps) {
+  const dict = getDict(locale);
   const year = new Date().getFullYear();
 
   return (
@@ -16,7 +19,7 @@ export function Footer({ profile, socials }: FooterProps) {
             {profile.name}
           </p>
           <p className="mt-1.5 font-mono text-[11px] text-ink-mute">
-            © {year} — Designed &amp; built by {profile.name.split(" ")[0]}
+            © {year} — {dict.footer.designedBy} {profile.name.split(" ")[0]}
           </p>
         </div>
 
@@ -48,10 +51,10 @@ export function Footer({ profile, socials }: FooterProps) {
               rel="noopener noreferrer"
               className="text-ink-dim no-underline transition-colors hover:text-accent"
             >
-              Résumé
+              {dict.resume}
             </a>
             <a href="#top" className="text-ink-dim no-underline transition-colors hover:text-accent">
-              ↑ Top
+              ↑ {dict.footer.top}
             </a>
           </div>
           <p className="font-mono text-[11px] text-ink-mute">Next.js · TypeScript · Tailwind</p>

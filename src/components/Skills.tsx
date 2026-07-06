@@ -1,3 +1,4 @@
+import { getDict, type Locale, pick } from "@/lib/i18n";
 import type { SkillGroup } from "@/lib/siteContent";
 
 import { SectionHeading } from "./SectionHeading";
@@ -5,17 +6,19 @@ import { Tag } from "./Tag";
 
 type SkillsProps = {
   skills: SkillGroup[];
+  locale: Locale;
 };
 
-export function Skills({ skills }: SkillsProps) {
+export function Skills({ skills, locale }: SkillsProps) {
+  const dict = getDict(locale);
   return (
     <section id="skills" className="scroll-mt-20">
       <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-28">
         <SectionHeading
           index="04"
-          eyebrow="Skills"
-          title="Toolkit"
-          description="Languages, frameworks, and platforms I work with."
+          eyebrow={dict.skills.eyebrow}
+          title={dict.skills.title}
+          description={dict.skills.description}
         />
 
         <div className="border-t border-line">
@@ -29,7 +32,7 @@ export function Skills({ skills }: SkillsProps) {
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <h3 className="font-display text-lg font-medium tracking-tight text-ink">
-                  {group.category}
+                  {pick(group.category, locale)}
                 </h3>
               </div>
               <div className="flex flex-wrap gap-1.5">
