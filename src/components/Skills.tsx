@@ -1,28 +1,46 @@
-import { SectionHeading } from "@/components/SectionHeading";
-import { Tag } from "@/components/Tag";
-import { skills } from "@/data/skills";
+import type { SkillGroup } from "@/lib/siteContent";
 
-export function Skills() {
+import { SectionHeading } from "./SectionHeading";
+import { Tag } from "./Tag";
+
+type SkillsProps = {
+  skills: SkillGroup[];
+};
+
+export function Skills({ skills }: SkillsProps) {
   return (
-    <section id="skills" className="px-5 py-20 md:px-8">
-      <div className="mx-auto max-w-6xl">
+    <section id="skills" className="scroll-mt-24 bg-base-2/60">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:px-8 md:py-28">
         <SectionHeading
+          index="04"
           eyebrow="Skills"
-          title="A practical toolkit for building full-stack and AI-assisted systems."
-          description="Grouped by the technologies and workflows I have used in projects, internships, and prototypes."
+          title="Tools I reach for"
+          description="The languages, frameworks, and platforms behind the projects above."
         />
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {skills.map((group) => (
-            <article key={group.category} className="group rounded-lg border border-warm-border bg-warm-surface p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cool-accent hover:shadow-card">
-              <span className="mb-4 block h-1 w-10 rounded-full bg-signal-gold" aria-hidden="true" />
-              <h3 className="text-lg font-semibold text-warm-text">{group.category}</h3>
-              <div className="mt-5 flex flex-wrap gap-2">
+          {skills.map((group, index) => (
+            <div
+              key={group.category}
+              className="group card-topline rounded-2xl border border-line bg-surface p-6 transition-all duration-300 ease-out-expo hover:-translate-y-1 hover:border-accent/40 hover:shadow-card"
+            >
+              <h3 className="flex items-baseline gap-3">
+                <span
+                  aria-hidden="true"
+                  className="font-mono text-[11px] tracking-[0.2em] text-accent"
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="font-display text-lg font-medium tracking-tight text-ink">
+                  {group.category}
+                </span>
+              </h3>
+              <div className="mt-4 flex flex-wrap gap-1.5">
                 {group.items.map((item) => (
                   <Tag key={item}>{item}</Tag>
                 ))}
               </div>
-            </article>
+            </div>
           ))}
         </div>
       </div>

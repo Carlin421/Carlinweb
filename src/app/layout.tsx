@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
-import { profile, socials } from "@/data/profile";
+import { getSiteContent } from "@/lib/contentStore";
+import { getSocials } from "@/lib/siteContent";
 
 import "./globals.css";
 
@@ -12,70 +13,95 @@ const inter = Inter({
   display: "swap",
 });
 
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  axes: ["opsz"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://carlin-portfolio.vercel.app";
 
-const description =
-  "Carlin Hou is a software engineer and incoming University of Michigan MSI student interested in AI systems, full-stack engineering, backend systems, retrieval systems, and ML infrastructure.";
+export async function generateMetadata(): Promise<Metadata> {
+  const { profile } = await getSiteContent();
+  const title = `${profile.name} | Software Engineer`;
+  const description = profile.shortIntro;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Carlin Hou | Software Engineer",
-    template: "%s | Carlin Hou",
-  },
-  description,
-  applicationName: "Carlin Hou — Portfolio",
-  authors: [{ name: profile.name, url: siteUrl }],
-  creator: profile.name,
-  keywords: [
-    "Carlin Hou",
-    "software engineer",
-    "AI engineer",
-    "RAG",
-    "retrieval systems",
-    "backend engineering",
-    "full-stack developer",
-    "ML infrastructure",
-    "University of Michigan MSI",
-    "software engineering internship 2027",
-  ],
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    url: siteUrl,
-    siteName: "Carlin Hou — Portfolio",
-    title: "Carlin Hou | Software Engineer",
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: title,
+      template: `%s | ${profile.name}`,
+    },
     description,
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Carlin Hou | Software Engineer",
-    description,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
-  },
-};
+    applicationName: `${profile.name} — Portfolio`,
+    authors: [{ name: profile.name, url: siteUrl }],
+    creator: profile.name,
+    keywords: [
+      profile.name,
+      "software engineer",
+      "AI engineer",
+      "RAG",
+      "retrieval systems",
+      "backend engineering",
+      "full-stack developer",
+      "ML infrastructure",
+      "University of Michigan MSI",
+      "software engineering internship 2027",
+    ],
+    alternates: { canonical: "/" },
+    openGraph: {
+      type: "website",
+      url: siteUrl,
+      siteName: `${profile.name} — Portfolio`,
+      title,
+      description,
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large" },
+    },
+  };
+}
 
 export const viewport: Viewport = {
-  themeColor: "#F7F3EA",
-  colorScheme: "light",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0E0C09" },
+    { media: "(prefers-color-scheme: light)", color: "#F7F3EA" },
+  ],
+  colorScheme: "dark light",
 };
+
+// Runs before paint so the persisted (or system) theme never flashes.
+const themeInitScript = `(function(){var d=document.documentElement,t;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="light"&&t!=="dark"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}d.dataset.theme=t})()`;
 
 type RootLayoutProps = {
   children: ReactNode;
 };
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const { profile } = await getSiteContent();
+  const socials = getSocials(profile);
+
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: profile.name,
     jobTitle: "Software Engineer",
-    description,
+    description: profile.shortIntro,
     url: siteUrl,
     alumniOf: profile.education.map((item) => ({
       "@type": "CollegeOrUniversity",
@@ -85,8 +111,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
   };
 
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans">
+    <html
+      lang="en"
+      className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="bg-base font-sans text-ink">
         {children}
         <script
           type="application/ld+json"

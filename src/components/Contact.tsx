@@ -1,44 +1,93 @@
-import { ButtonLink } from "@/components/ButtonLink";
-import { IconLink } from "@/components/IconLink";
-import { FileTextIcon, GithubIcon, LinkedinIcon, MailIcon } from "@/components/icons";
-import { profile, socials } from "@/data/profile";
+import type { Profile, Socials } from "@/lib/siteContent";
 
-export function Contact() {
+import { ButtonLink } from "./ButtonLink";
+import { CopyEmailButton } from "./CopyEmailButton";
+import { IconLink } from "./IconLink";
+import { ArrowUpRight, FileText, Github, Linkedin, Mail } from "./icons";
+
+type ContactProps = {
+  profile: Profile;
+  socials: Socials;
+};
+
+export function Contact({ profile, socials }: ContactProps) {
   return (
-    <section id="contact" className="px-5 py-20 md:px-8">
-      <div className="mx-auto max-w-5xl rounded-lg border border-warm-border bg-[linear-gradient(135deg,#23211E_0%,#23383A_54%,#5F3F2B_100%)] bg-[length:180%_180%] p-8 text-warm-surface shadow-lift md:p-12 motion-safe:animate-surface-shift">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-cool-accentSoft">
-          Contact
-        </p>
-        <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
-          Let&apos;s build useful AI and software systems.
-        </h2>
-        <p className="mt-6 max-w-3xl text-base leading-8 text-warm-surfaceMuted md:text-lg">
-          I am currently looking for 2027 summer internship opportunities in software engineering, AI engineering, backend systems, and ML infrastructure.
-        </p>
-        <p className="mt-4 max-w-3xl text-base leading-8 text-warm-surfaceMuted/90">
-          If you are working on developer tools, AI systems, retrieval infrastructure, backend platforms, or applied AI products, I would be happy to connect.
-        </p>
+    <section id="contact" className="scroll-mt-24">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:px-8 md:py-32">
+        <div className="card-topline relative overflow-hidden rounded-3xl border border-line bg-surface px-6 py-16 text-center md:px-16 md:py-20">
+          {/* Ambient corner glows */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(600px 300px at 15% 0%, rgb(var(--c-accent) / 0.09), transparent 60%), radial-gradient(500px 280px at 90% 100%, rgb(var(--c-teal) / 0.08), transparent 60%)",
+            }}
+          />
 
-        <div className="mt-9 flex flex-wrap items-center gap-3">
-          {socials.email ? (
-            <ButtonLink href={`mailto:${socials.email}`} variant="secondary" ariaLabel="Email Carlin Hou" icon={<MailIcon className="h-full w-full" />} iconPosition="left">
-              Email Me
-            </ButtonLink>
-          ) : null}
-          <ButtonLink href={profile.resume} variant="secondary" external icon={<FileTextIcon className="h-full w-full" />} iconPosition="left">
-            Resume
-          </ButtonLink>
-          {socials.github ? (
-            <IconLink href={socials.github} label="GitHub" variant="dark">
-              <GithubIcon className="h-full w-full" />
-            </IconLink>
-          ) : null}
-          {socials.linkedin ? (
-            <IconLink href={socials.linkedin} label="LinkedIn" variant="dark">
-              <LinkedinIcon className="h-full w-full" />
-            </IconLink>
-          ) : null}
+          <div className="relative">
+            <p className="flex items-center justify-center gap-3 font-mono text-xs uppercase tracking-[0.22em] text-accent">
+              <span aria-hidden="true">06</span>
+              <span aria-hidden="true" className="h-px w-10 bg-accent/50" />
+              Contact
+            </p>
+
+            <h2 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-medium tracking-tight text-ink md:text-6xl">
+              Let’s build something <em className="text-gradient-accent not-italic">together</em>.
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-ink-dim md:text-lg">
+              {profile.searchStatus}
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3.5">
+              {socials.email ? (
+                <>
+                  <ButtonLink
+                    href={`mailto:${socials.email}`}
+                    variant="primary"
+                    icon={<Mail width={16} height={16} />}
+                    iconPosition="left"
+                  >
+                    Email me
+                  </ButtonLink>
+                  <CopyEmailButton email={socials.email} />
+                </>
+              ) : (
+                socials.linkedin && (
+                  <ButtonLink
+                    href={socials.linkedin}
+                    external
+                    variant="primary"
+                    icon={<ArrowUpRight width={16} height={16} />}
+                  >
+                    Connect on LinkedIn
+                  </ButtonLink>
+                )
+              )}
+              <ButtonLink
+                href={profile.resume}
+                external
+                icon={<FileText width={15} height={15} />}
+                iconPosition="left"
+              >
+                Résumé
+              </ButtonLink>
+            </div>
+
+            <div className="mt-8 flex items-center justify-center gap-3">
+              {socials.github && (
+                <IconLink href={socials.github} label="GitHub">
+                  <Github width={17} height={17} />
+                </IconLink>
+              )}
+              {socials.linkedin && (
+                <IconLink href={socials.linkedin} label="LinkedIn">
+                  <Linkedin width={17} height={17} />
+                </IconLink>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>

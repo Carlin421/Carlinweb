@@ -2,42 +2,166 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ---------------------------------------------------------------------------
+   Design tokens. RGB triplets so Tailwind alpha modifiers work (bg-accent/10).
+   Dark is the default theme; [data-theme="light"] swaps the palette. The
+   no-flash script in layout.tsx sets data-theme before first paint.
+--------------------------------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --c-bg: 14 12 9; /* #0E0C09 warm near-black */
+  --c-bg-2: 19 16 12;
+  --c-surface: 24 20 15; /* #18140F card */
+  --c-surface-2: 32 27 20;
+  --c-ink: 240 233 220; /* #F0E9DC warm cream */
+  --c-ink-dim: 178 168 150;
+  --c-ink-mute: 130 121 106;
+  --c-line: 45 39 30; /* hairline borders */
+  --c-line-strong: 68 59 45;
+  --c-accent: 224 154 104; /* #E09A68 copper */
+  --c-accent-ink: 26 18 12; /* text on accent fills */
+  --c-teal: 82 199 183; /* #52C7B7 */
+  --c-gold: 216 178 110;
+
+  --shadow-card: 0 18px 50px rgb(0 0 0 / 0.45);
+  --shadow-lift: 0 24px 70px rgb(0 0 0 / 0.55);
+  --glow-accent: rgb(224 154 104 / 0.13);
+  --glow-teal: rgb(82 199 183 / 0.1);
+  --grid-line: rgb(240 233 220 / 0.028);
+  --noise-opacity: 0.028;
+}
+
+[data-theme="light"] {
   color-scheme: light;
+
+  --c-bg: 247 243 234; /* #F7F3EA parchment */
+  --c-bg-2: 242 236 224;
+  --c-surface: 255 253 248;
+  --c-surface-2: 240 233 220;
+  --c-ink: 35 33 30; /* #23211E charcoal */
+  --c-ink-dim: 90 84 72;
+  --c-ink-mute: 138 129 116;
+  --c-line: 221 211 194;
+  --c-line-strong: 199 186 162;
+  --c-accent: 164 90 46; /* #A45A2E copper, dark enough on cream */
+  --c-accent-ink: 255 250 242;
+  --c-teal: 14 116 108;
+  --c-gold: 150 110 44;
+
+  --shadow-card: 0 18px 50px rgb(35 33 30 / 0.1);
+  --shadow-lift: 0 24px 60px rgb(35 33 30 / 0.14);
+  --glow-accent: rgb(164 90 46 / 0.08);
+  --glow-teal: rgb(14 116 108 / 0.07);
+  --grid-line: rgb(35 33 30 / 0.035);
+  --noise-opacity: 0.02;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  scroll-padding-top: 96px;
 }
 
 body {
   min-height: 100vh;
-  background-color: #f7f3ea;
+  background-color: rgb(var(--c-bg));
+  /* Ambient glows + a faint blueprint grid — the "crafted" backdrop. */
   background-image:
-    linear-gradient(180deg, rgba(221, 239, 240, 0.64) 0%, rgba(247, 243, 234, 0) 30%),
-    linear-gradient(rgba(35, 33, 30, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(35, 33, 30, 0.035) 1px, transparent 1px);
-  background-size: 100% 100%, 42px 42px, 42px 42px;
-  color: #23211e;
+    radial-gradient(1100px 520px at 12% -10%, var(--glow-accent), transparent 60%),
+    radial-gradient(900px 460px at 88% -6%, var(--glow-teal), transparent 60%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    44px 44px,
+    44px 44px;
+  background-attachment: fixed, fixed, local, local;
+  color: rgb(var(--c-ink));
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
+}
+
+/* Film-grain overlay — sits above everything, never intercepts input. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
 }
 
 ::selection {
-  background: #e8d8c6;
-  color: #23211e;
+  background: rgb(var(--c-accent) / 0.3);
+  color: rgb(var(--c-ink));
+}
+
+/* Themed scrollbar (WebKit + Firefox). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--c-line-strong)) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-line-strong));
+  border-radius: 999px;
+  border: 3px solid rgb(var(--c-bg));
+}
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @layer base {
   * {
-    @apply border-warm-border;
+    @apply border-line;
   }
 
   a {
     text-decoration-thickness: 0.08em;
-    text-underline-offset: 0.18em;
+    text-underline-offset: 0.2em;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Copper→gold gradient text for display headline accents. */
+  .text-gradient-accent {
+    background: linear-gradient(
+      100deg,
+      rgb(var(--c-accent)) 0%,
+      rgb(var(--c-gold)) 55%,
+      rgb(var(--c-accent)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Hairline top border with a soft accent fade, used on raised cards. */
+  .card-topline {
+    position: relative;
+  }
+  .card-topline::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(var(--c-accent) / 0.5), transparent);
   }
 }
 

@@ -1,93 +1,117 @@
-import { ButtonLink } from "@/components/ButtonLink";
-import { IconLink } from "@/components/IconLink";
-import { ArrowRightIcon, FileTextIcon, GithubIcon, LinkedinIcon, SparkleIcon } from "@/components/icons";
-import { focusAreas, profile, socials } from "@/data/profile";
+import type { Profile, Socials } from "@/lib/siteContent";
 
-const proofPoints = ["Full-stack products", "Applied AI systems", "Backend infrastructure"];
+import { ButtonLink } from "./ButtonLink";
+import { IconLink } from "./IconLink";
+import { Spotlight } from "./Spotlight";
+import { TerminalCard } from "./TerminalCard";
+import { ArrowRight, FileText, Github, Linkedin, Mail, MapPin } from "./icons";
 
-export function Hero() {
+type HeroProps = {
+  profile: Profile;
+  socials: Socials;
+  projectCount: number;
+  experienceCount: number;
+};
+
+export function Hero({ profile, socials, projectCount, experienceCount }: HeroProps) {
+  const education = profile.education[0];
+  const stats = [
+    { value: String(projectCount).padStart(2, "0"), label: "projects & builds" },
+    { value: String(experienceCount).padStart(2, "0"), label: "engineering internships" },
+    ...(education
+      ? [{ value: education.school, label: education.detail.toLowerCase(), wide: true }]
+      : []),
+  ];
+
   return (
-    <section id="top" className="relative isolate overflow-hidden px-5 py-20 md:px-8 md:py-28">
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-0 -z-10 h-full bg-[linear-gradient(120deg,rgba(221,239,240,0.72),rgba(247,243,234,0)_42%,rgba(232,216,198,0.42))]"
-      />
-
-      <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+    <section id="top" className="relative overflow-hidden">
+      <Spotlight />
+      <div className="mx-auto grid max-w-6xl items-center gap-14 px-6 pb-16 pt-32 md:px-8 md:pt-40 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16 lg:pb-20">
         <div>
-          <p className="mb-5 inline-flex max-w-2xl items-center gap-3 rounded-full border border-warm-border bg-warm-surface/95 px-4 py-2 text-sm font-medium text-warm-secondary shadow-sm backdrop-blur">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-cool-accent motion-safe:animate-status-pulse" />
-            <span>{profile.searchStatus}</span>
+          <p className="inline-flex items-center gap-2.5 rounded-full border border-teal/30 bg-teal/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-teal">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-teal motion-safe:animate-status-pulse" />
+            </span>
+            {profile.availability}
           </p>
-          <h1 className="max-w-4xl text-5xl font-semibold leading-[0.95] tracking-tight text-warm-text md:text-7xl">
-            {profile.name}
+
+          <h1 className="mt-6 font-display text-[2.6rem] font-medium leading-[1.06] tracking-tight text-ink md:text-6xl lg:text-[4.2rem]">
+            Hi, I’m {profile.name.split(" ")[0]}. I build{" "}
+            <em className="text-gradient-accent not-italic">AI systems</em> that turn messy
+            workflows into working software.
           </h1>
-          <p className="mt-5 max-w-3xl text-xl font-medium leading-8 text-cool-accentDark md:text-2xl">
-            {profile.title}
-          </p>
-          <p className="mt-6 max-w-2xl text-base leading-8 text-warm-secondary md:text-lg">
+
+          <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-ink-dim md:text-lg">
             {profile.shortIntro}
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <ButtonLink href="#projects" variant="primary" icon={<ArrowRightIcon className="h-full w-full" />}>
-              View Projects
-            </ButtonLink>
-            <ButtonLink href={profile.resume} external icon={<FileTextIcon className="h-full w-full" />} iconPosition="left">
-              Resume
-            </ButtonLink>
-            {socials.github ? (
-              <IconLink href={socials.github} label="GitHub">
-                <GithubIcon className="h-full w-full" />
-              </IconLink>
-            ) : null}
-            {socials.linkedin ? (
-              <IconLink href={socials.linkedin} label="LinkedIn">
-                <LinkedinIcon className="h-full w-full" />
-              </IconLink>
-            ) : null}
-          </div>
+          <p className="mt-5 flex items-center gap-2 font-mono text-xs text-ink-mute">
+            <MapPin width={14} height={14} aria-hidden="true" />
+            {profile.location}
+            <span aria-hidden="true" className="text-line-strong">
+              ·
+            </span>
+            {profile.title}
+          </p>
 
-          <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
-            {proofPoints.map((point) => (
-              <div key={point} className="rounded-lg border border-warm-border bg-warm-surface/80 px-4 py-3 text-sm font-semibold text-warm-text shadow-sm backdrop-blur">
-                <span className="mb-2 block h-1 w-8 rounded-full bg-cool-accent" />
-                {point}
-              </div>
-            ))}
+          <div className="mt-8 flex flex-wrap items-center gap-3.5">
+            <ButtonLink
+              href="#projects"
+              variant="primary"
+              icon={<ArrowRight width={16} height={16} />}
+            >
+              View projects
+            </ButtonLink>
+            <ButtonLink
+              href={profile.resume}
+              external
+              icon={<FileText width={15} height={15} />}
+              iconPosition="left"
+            >
+              Résumé
+            </ButtonLink>
+            <span className="flex items-center gap-2.5">
+              {socials.github && (
+                <IconLink href={socials.github} label="GitHub">
+                  <Github width={17} height={17} />
+                </IconLink>
+              )}
+              {socials.linkedin && (
+                <IconLink href={socials.linkedin} label="LinkedIn">
+                  <Linkedin width={17} height={17} />
+                </IconLink>
+              )}
+              {socials.email && (
+                <IconLink href={`mailto:${socials.email}`} label="Email" external={false}>
+                  <Mail width={17} height={17} />
+                </IconLink>
+              )}
+            </span>
           </div>
         </div>
 
-        <aside className="relative overflow-hidden rounded-lg border border-warm-border bg-warm-surface/95 p-6 shadow-lift backdrop-blur md:p-8 motion-safe:animate-subtle-float" aria-label="Current focus areas">
-          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cool-accent via-signal-gold to-signal-rust" />
-          <div className="flex items-center justify-between gap-4 border-b border-warm-border pb-5">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cool-accent">
-                Currently focused on
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-warm-text">
-                Applied AI systems that fit real workflows
-              </h2>
-            </div>
-            <span className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-warm-border bg-cool-accentSoft text-cool-accentDark md:flex">
-              <SparkleIcon className="h-6 w-6" />
-            </span>
-          </div>
+        <div className="motion-safe:animate-subtle-float lg:pl-4">
+          <TerminalCard focusAreas={profile.focusAreas} availability={profile.availability} />
+        </div>
+      </div>
 
-          <div className="mt-6 grid gap-3">
-            {focusAreas.map((area, index) => (
-              <div
-                key={area}
-                className="group flex items-center gap-4 rounded-lg border border-warm-border bg-warm-background/60 px-4 py-3 transition duration-200 hover:-translate-y-0.5 hover:border-cool-accent hover:bg-cool-accentSoft/70"
+      <div className="mx-auto max-w-6xl px-6 pb-20 md:px-8">
+        <dl className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line/60 sm:grid-cols-3">
+          {stats.map((stat) => (
+            <div key={stat.label} className="flex flex-col gap-1 bg-surface px-6 py-5">
+              <dt className="order-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute">
+                {stat.label}
+              </dt>
+              <dd
+                className={`order-1 font-display font-medium text-ink ${
+                  "wide" in stat && stat.wide ? "text-xl leading-9 md:text-2xl" : "text-3xl"
+                }`}
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warm-accentSoft text-sm font-semibold text-warm-accentDark transition group-hover:bg-cool-accent group-hover:text-warm-surface">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <p className="text-sm font-medium text-warm-secondary">{area}</p>
-              </div>
-            ))}
-          </div>
-        </aside>
+                {stat.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

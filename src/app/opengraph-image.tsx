@@ -1,12 +1,17 @@
 import { ImageResponse } from "next/og";
 
-import { profile } from "@/data/profile";
+import { defaultContent } from "@/lib/siteContent";
 
+export const runtime = "edge";
 export const alt = "Carlin Hou — Software Engineer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+// Uses committed defaults (not the live content store) so this stays a fast,
+// dependency-free edge render — name/title changes there are rare.
+const { profile } = defaultContent;
+
+export default function OpenGraphImage() {
   return new ImageResponse(
     (
       <div
@@ -16,66 +21,59 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "80px",
-          backgroundColor: "#F7F3EA",
+          padding: 72,
+          backgroundColor: "#0E0C09",
           backgroundImage:
-            "linear-gradient(135deg, rgba(221,239,240,0.85) 0%, rgba(247,243,234,0) 45%, rgba(232,216,198,0.6) 100%)",
-          fontFamily: "sans-serif",
+            "radial-gradient(700px 400px at 10% -10%, rgba(224,154,104,0.16), transparent 60%), radial-gradient(600px 360px at 95% 0%, rgba(82,199,183,0.12), transparent 60%)",
+          color: "#F0E9DC",
+          fontFamily: "Georgia, serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            fontSize: 24,
+            color: "#52C7B7",
+          }}
+        >
           <div
             style={{
-              display: "flex",
-              width: "18px",
-              height: "18px",
-              borderRadius: "9999px",
-              backgroundColor: "#176B73",
+              width: 14,
+              height: 14,
+              borderRadius: 999,
+              backgroundColor: "#52C7B7",
             }}
           />
-          <div style={{ fontSize: "30px", color: "#176B73", fontWeight: 600 }}>
-            Open to 2027 SWE / AI internships
-          </div>
+          Open to 2027 SWE / AI internships
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ fontSize: 104, fontWeight: 600, letterSpacing: -3 }}>{profile.name}</div>
           <div
             style={{
-              fontSize: "104px",
-              fontWeight: 700,
-              color: "#23211E",
-              letterSpacing: "-0.03em",
-              lineHeight: 1,
+              marginTop: 18,
+              fontSize: 32,
+              color: "#B0A695",
+              maxWidth: 900,
             }}
           >
-            {profile.name}
-          </div>
-          <div
-            style={{
-              marginTop: "28px",
-              fontSize: "40px",
-              color: "#5F3F2B",
-              fontWeight: 500,
-              maxWidth: "900px",
-            }}
-          >
-            {profile.title}
+            Software Engineer — AI systems, retrieval, and full-stack products
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "16px" }}>
+        <div style={{ display: "flex", gap: 16 }}>
           {["AI systems", "Full-stack", "Backend", "Retrieval / RAG"].map((tag) => (
             <div
               key={tag}
               style={{
                 display: "flex",
-                padding: "12px 24px",
-                borderRadius: "9999px",
-                border: "1px solid #DDD3C2",
-                backgroundColor: "#FFFDF8",
-                color: "#625D53",
-                fontSize: "26px",
-                fontWeight: 600,
+                padding: "10px 24px",
+                borderRadius: 999,
+                border: "1px solid rgba(224,154,104,0.45)",
+                color: "#E0B486",
+                fontSize: 24,
               }}
             >
               {tag}
@@ -84,6 +82,6 @@ export default function OpengraphImage() {
         </div>
       </div>
     ),
-    size,
+    size
   );
 }

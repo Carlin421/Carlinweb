@@ -6,3 +6,6 @@ out
 *.log
 .env*
 *.tsbuildinfo
+
+# Local content-store fallback used when no Vercel Blob token is configured
+.content/

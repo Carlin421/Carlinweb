@@ -1,5 +1,4 @@
-import Link from "next/link";
-import type { MouseEventHandler, ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -8,58 +7,32 @@ type IconLinkProps = {
   label: string;
   children: ReactNode;
   external?: boolean;
-  variant?: "light" | "dark" | "nav";
-  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  className?: string;
 };
 
-const variants = {
-  light:
-    "border-warm-border bg-warm-surface text-warm-text hover:border-cool-accent hover:bg-cool-accentSoft hover:text-cool-accentDark focus-visible:ring-cool-accent",
-  dark:
-    "border-white/15 bg-white/10 text-warm-surface hover:border-cool-accentSoft hover:bg-cool-accentSoft hover:text-cool-accentDark focus-visible:ring-cool-accentSoft",
-  nav:
-    "border-warm-border/80 bg-warm-surface/80 text-warm-secondary hover:border-cool-accent hover:bg-cool-accentSoft hover:text-cool-accentDark focus-visible:ring-cool-accent",
-};
-
-export function IconLink({
-  href,
-  label,
-  children,
-  external = true,
-  variant = "light",
-  onClick,
-}: IconLinkProps) {
-  const className = cn(
-    "group/tool relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-warm-background",
-    variants[variant],
-  );
-
-  const content = (
-    <>
-      <span className="sr-only">{label}</span>
-      <span className="h-5 w-5" aria-hidden="true">
+/** Circular icon button with a CSS-only tooltip shown on hover/focus. */
+export function IconLink({ href, label, children, external = true, className }: IconLinkProps) {
+  return (
+    <span className="group/tool relative inline-flex">
+      <a
+        href={href}
+        aria-label={label}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className={cn(
+          "inline-flex h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-surface/70 text-ink-dim no-underline",
+          "transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-accent/60 hover:text-ink",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base",
+          className
+        )}
+      >
         {children}
-      </span>
+      </a>
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-[calc(100%+0.5rem)] z-20 -translate-x-1/2 whitespace-nowrap rounded-md bg-warm-text px-2.5 py-1 text-xs font-semibold text-warm-surface opacity-0 shadow-card transition duration-150 group-hover/tool:opacity-100 group-focus-visible/tool:opacity-100"
+        className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-surface px-2 py-1 font-mono text-[10px] tracking-wide text-ink-dim opacity-0 shadow-card transition-opacity duration-200 group-hover/tool:opacity-100 group-focus-within/tool:opacity-100"
       >
         {label}
       </span>
-    </>
-  );
-
-  if (external) {
-    return (
-      <a className={className} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} title={label} onClick={onClick}>
-        {content}
-      </a>
-    );
-  }
-
-  return (
-    <Link className={className} href={href} aria-label={label} title={label} onClick={onClick}>
-      {content}
-    </Link>
+    </span>
   );
 }

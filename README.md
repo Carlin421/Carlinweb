@@ -1,31 +1,16 @@
-# Carlin Hou Portfolio
+# Carlin Hou — Portfolio
 
-Personal portfolio website for Carlin Hou, built to present software engineering projects, internship experience, technical skills, and leadership work.
+Personal portfolio website for Carlin Hou: software engineering projects, internship experience, technical skills, and leadership work.
 
-The site is intentionally static-first, recruiter-friendly, and easy to maintain. Public copy avoids confidential company data, fake metrics, and invented project links.
-
-## Included Project Sections
-
-- Customer Service RAG Assistant
-- AI Tennis Match Analysis
-- Zanny Campus Sponsorship Platform
-- Voice Support Demo with Twilio
-- Merchant Platform Full-Stack Features
-- Cybersecurity Escape Room LINE Bot
-- Admissions Choice Game LINE Bot
-- Web Crawling and Data Analysis Course
-- LinkEDU
-
-Project text content is editable in `src/data/projects.ts`. Project **images** are managed without editing code — see below.
+Dark-first editorial design (with a light theme toggle), a ⌘K command palette, and a full **admin panel at `/admin`** for editing every piece of site content from the browser — no code changes or redeploys needed. Public copy avoids confidential company data, fake metrics, and invented project links.
 
 ## Tech Stack
 
-- Next.js App Router
-- React
-- TypeScript
-- Tailwind CSS
-- Vercel Blob (optional, for image uploads)
-- Vercel-ready deployment
+- Next.js 14 (App Router) · React 18 · TypeScript
+- Tailwind CSS (semantic CSS-variable tokens, dark/light theming)
+- Fonts: Fraunces (display) · Inter (body) · JetBrains Mono (code/labels)
+- Vercel Blob — stores admin content edits, project images, and the resume
+- Deployed on Vercel
 
 ## Local Development
 
@@ -42,69 +27,65 @@ npm run lint        # eslint
 npm run typecheck   # tsc --noEmit
 ```
 
-## Managing Project Images (no code edits)
+For the admin panel locally, copy `.env.example` to `.env.local` and set
+`ADMIN_PASSWORD`. Without a `BLOB_READ_WRITE_TOKEN`, content edits save to a
+gitignored `.content/site.json` file and image uploads go straight into
+`public/projects/` — handy for testing.
 
-Each project has a stable `slug` in `src/data/projects.ts`. Its image is resolved
-automatically from, in priority order:
+## Editing the Site (no code, no redeploy)
 
-1. **An upload via the `/admin` page** (stored in Vercel Blob as `projects/<slug>`).
-2. **A committed file** at `public/projects/<slug>.<ext>` (`.webp`, `.png`, `.jpg`, `.avif`).
+Go to **`/admin`**, sign in with the admin password, and edit:
 
-So you have two ways to change an image, neither of which touches component code:
+- **Profile** — name, title, intro, availability badge, location, email,
+  GitHub/LinkedIn, about paragraphs, education, focus areas
+- **Projects** — add/edit/delete/reorder projects, tags, links, featured flag,
+  and upload a screenshot per project
+- **Experience / Skills / Activities** — full add/edit/delete/reorder
+- **Résumé** — upload a new PDF
 
-- **Upload from the browser (recommended):** go to `/admin`, enter the admin
-  password, pick the project, choose an image, and upload. It replaces the old
-  image for that project and appears on the site within about a minute. This
-  requires the two environment variables below.
-- **Drop a file in the repo:** save your image as `public/projects/<slug>.webp`
-  (matching the project's slug) and redeploy.
+Saves go live on the site within seconds (Vercel cache is revalidated on save).
+"Reset to defaults" restores the content committed in `src/data/*.ts`.
 
-If neither source has an image for a project, its card simply renders without one.
+### How content works under the hood
 
-### Environment variables
+Committed defaults live in `src/data/*.ts`. The admin panel saves overrides as
+JSON to Vercel Blob via `src/lib/contentStore.ts`; the site merges overrides on
+top of defaults at render time. If the Blob store is ever unreachable, the site
+falls back to the committed defaults — it can't break.
+
+Project images resolve by slug, in priority order:
+
+1. an upload from `/admin` (Vercel Blob `projects/<slug>`)
+2. a committed file at `public/projects/<slug>.<ext>` (`.webp`, `.png`, `.jpg`, `.avif`)
+
+Projects without an image get a designed typographic placeholder.
+
+## Environment Variables
 
 Copy `.env.example` to `.env.local` (local) or set these in Vercel
 (Settings → Environment Variables):
 
 | Variable | Purpose |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Canonical URL for SEO / Open Graph / JSON-LD. |
-| `BLOB_READ_WRITE_TOKEN` | Connects a Vercel Blob store. Auto-injected by Vercel when you create + link a Blob store; copy it locally for local uploads. |
-| `ADMIN_UPLOAD_PASSWORD` | Password that gates the `/admin` upload form. |
+| `NEXT_PUBLIC_SITE_URL` | Canonical URL for SEO / Open Graph / JSON-LD / sitemap. |
+| `ADMIN_PASSWORD` | Password for the `/admin` panel. (`ADMIN_UPLOAD_PASSWORD` still works as a legacy fallback.) |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob store token. Auto-injected by Vercel when you create + link a Blob store. Needed in production for admin edits to persist. |
 
-The upload page and API degrade safely: without a Blob store or password they
-return a clear "not configured" message, and the site keeps using committed
-images in `public/projects/`.
+Everything degrades safely: without a password the admin panel shows setup
+instructions; without a Blob token the site serves the committed defaults.
 
-## Manual Updates Needed Before Publishing
+## Deployment (Vercel)
 
-- `src/data/profile.ts` → set your real `email` (currently a placeholder, so the
-  "Email Me" button is hidden until you fill it in). GitHub and LinkedIn are set.
-- Replace `public/resume.pdf` with the real resume PDF.
-- Set `NEXT_PUBLIC_SITE_URL` to your real domain.
-- (Optional) Add a Vercel Blob store + `ADMIN_UPLOAD_PASSWORD` to enable `/admin` uploads.
-- (Optional) Add project demo or repo links in `src/data/projects.ts`.
+1. Push the repository to GitHub and import it into Vercel.
+2. Create a Blob store (Storage → Create → Blob) and connect it to the project
+   — this auto-injects `BLOB_READ_WRITE_TOKEN`.
+3. Add `ADMIN_PASSWORD` and `NEXT_PUBLIC_SITE_URL` env vars.
+4. Deploy, then visit `/admin` to fill in your email and upload your real
+   resume — both ship as placeholders.
 
-## Content Editing
+## Before Publishing Checklist
 
-Most editable content lives in:
-
-```text
-src/data/profile.ts
-src/data/projects.ts
-src/data/experience.ts
-src/data/skills.ts
-src/data/additionalWork.ts
-```
-
-The page UI lives in reusable components under `src/components/`.
-
-## Deployment
-
-This project is intended to be deployed on Vercel.
-
-1. Push the repository to GitHub.
-2. Import the repository into Vercel.
-3. (Optional) Create a Blob store (Storage → Blob) and link it to enable `/admin` uploads.
-4. Add the environment variables above.
-5. Deploy.
+- [ ] Set your real **email** in `/admin` → Profile (hidden on the site until set)
+- [ ] Upload your real **resume PDF** in `/admin` → Résumé
+- [ ] Set `NEXT_PUBLIC_SITE_URL` to the real domain
+- [ ] Add project demo/repo **links** in `/admin` → Projects where available

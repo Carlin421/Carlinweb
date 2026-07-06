@@ -1,43 +1,73 @@
-import { SectionHeading } from "@/components/SectionHeading";
-import { experience } from "@/data/experience";
+import type { ExperienceItem } from "@/lib/siteContent";
 
-export function Experience() {
+import { SectionHeading } from "./SectionHeading";
+
+type ExperienceProps = {
+  experience: ExperienceItem[];
+};
+
+export function Experience({ experience }: ExperienceProps) {
   return (
-    <section id="experience" className="bg-cool-accentSoft/45 px-5 py-20 md:px-8">
-      <div className="mx-auto max-w-6xl">
+    <section id="experience" className="scroll-mt-24">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:px-8 md:py-28">
         <SectionHeading
+          index="03"
           eyebrow="Experience"
-          title="Internship work across AI support systems and full-stack applications."
-          description="Public-safe summaries focused on engineering scope, collaboration, and technologies used."
+          title="Where I’ve worked"
+          description="Internships where prototypes had to survive contact with real users, real data, and real deadlines."
         />
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          {experience.map((item) => (
-            <article key={`${item.company}-${item.role}`} className="relative overflow-hidden rounded-lg border border-warm-border bg-warm-surface p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cool-accent hover:shadow-lift md:p-8">
-              <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cool-accent to-signal-green" aria-hidden="true" />
-              <div className="flex flex-col gap-3 border-b border-warm-border pb-5 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <h3 className="text-2xl font-semibold tracking-tight text-warm-text">{item.role}</h3>
-                  <p className="mt-2 font-medium text-warm-secondary">{item.company}</p>
+        <ol className="relative space-y-10 border-l border-line pl-8 md:space-y-12 md:pl-10">
+          {experience.map((item, index) => (
+            <li key={`${item.company}-${item.date}`} className="group relative">
+              {/* Timeline node */}
+              <span
+                aria-hidden="true"
+                className="absolute -left-8 top-2 flex h-3 w-3 -translate-x-1/2 items-center justify-center md:-left-10"
+              >
+                <span className="h-3 w-3 rounded-full border-2 border-teal bg-base transition-colors duration-300 group-hover:bg-teal" />
+              </span>
+
+              <div className="card-topline rounded-2xl border border-line bg-surface p-6 transition-all duration-300 ease-out-expo group-hover:-translate-y-1 group-hover:border-accent/40 group-hover:shadow-card md:p-8">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                  <div>
+                    <h3 className="font-display text-xl font-medium tracking-tight text-ink md:text-2xl">
+                      {item.role}
+                    </h3>
+                    <p className="mt-1 text-sm text-ink-dim">
+                      <span className="font-medium text-accent">{item.company}</span>
+                      <span aria-hidden="true" className="mx-2 text-line-strong">
+                        ·
+                      </span>
+                      {item.location}
+                    </p>
+                  </div>
+                  <p className="rounded-full border border-line bg-surface-2/70 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.15em] text-ink-mute">
+                    {item.date}
+                  </p>
                 </div>
-                <div className="text-left sm:text-right">
-                  <p className="text-sm font-semibold text-cool-accent">{item.date}</p>
-                  <p className="mt-1 text-sm text-warm-muted">{item.location}</p>
-                </div>
+
+                <p className="mt-4 text-pretty text-sm leading-relaxed text-ink-dim md:text-[0.95rem]">
+                  {item.description}
+                </p>
+
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {item.bullets.map((bullet) => (
+                    <li key={bullet} className="flex gap-2.5 text-sm leading-relaxed text-ink-dim">
+                      <span
+                        aria-hidden="true"
+                        className="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-accent"
+                      />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              <p className="mt-5 text-base leading-8 text-warm-secondary">{item.description}</p>
-              <ul className="mt-5 space-y-3 text-sm leading-7 text-warm-secondary">
-                {item.bullets.map((bullet) => (
-                  <li key={bullet} className="flex gap-3">
-                    <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-warm-accent" />
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
+              <span className="sr-only">Position {index + 1} of {experience.length}</span>
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

@@ -1,38 +1,55 @@
-import { SectionHeading } from "@/components/SectionHeading";
-import { profile } from "@/data/profile";
+import type { Profile } from "@/lib/siteContent";
 
-export function About() {
+import { SectionHeading } from "./SectionHeading";
+import { Sparkle } from "./icons";
+
+type AboutProps = {
+  profile: Profile;
+};
+
+export function About({ profile }: AboutProps) {
   return (
-    <section id="about" className="px-5 py-20 md:px-8">
-      <div className="mx-auto max-w-6xl">
-        <SectionHeading
-          eyebrow="About"
-          title="Engineering practical AI products from real workflow problems."
-          description="I care about software that is understandable, maintainable, and useful enough for real teams to adopt."
-        />
-
-        <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-          <div className="relative overflow-hidden rounded-lg border border-warm-border bg-warm-surface p-6 shadow-sm md:p-8">
-            <span className="absolute inset-x-0 top-0 h-1 bg-cool-accent" aria-hidden="true" />
-            <div className="space-y-5 text-base leading-8 text-warm-secondary md:text-lg">
-              {profile.about.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
+    <section id="about" className="scroll-mt-24">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:px-8 md:py-28">
+        <SectionHeading index="01" eyebrow="About" title="A builder’s background" />
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
+          <div className="space-y-5 text-pretty leading-relaxed text-ink-dim md:text-lg">
+            {profile.about.map((paragraph, index) => (
+              <p
+                key={index}
+                className={
+                  index === 0
+                    ? "first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-display first-letter:text-6xl first-letter:font-medium first-letter:leading-[0.8] first-letter:text-accent"
+                    : undefined
+                }
+              >
+                {paragraph}
+              </p>
+            ))}
           </div>
 
-          <div className="rounded-lg border border-warm-border bg-warm-surfaceMuted/80 p-6 md:p-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cool-accent">
-              Education
-            </p>
-            <div className="mt-6 space-y-4">
-              {profile.education.map((item) => (
-                <div key={item.school} className="rounded-lg border border-warm-border bg-warm-surface p-5 transition duration-200 hover:-translate-y-0.5 hover:border-cool-accent hover:shadow-card">
-                  <h3 className="font-semibold text-warm-text">{item.school}</h3>
-                  <p className="mt-2 text-sm font-medium text-warm-secondary">{item.degree}</p>
-                  <p className="mt-1 text-sm text-warm-muted">{item.detail}</p>
-                </div>
-              ))}
+          <div className="space-y-5">
+            <div className="card-topline rounded-2xl border border-line bg-surface p-6 transition-all duration-300 ease-out-expo hover:-translate-y-1 hover:border-accent/40 hover:shadow-card">
+              <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
+                Education
+              </h3>
+              <ul className="mt-4 space-y-5">
+                {profile.education.map((item) => (
+                  <li key={item.school} className="border-l-2 border-line pl-4">
+                    <p className="font-medium text-ink">{item.school}</p>
+                    <p className="mt-0.5 text-sm text-ink-dim">{item.degree}</p>
+                    <p className="mt-1 font-mono text-xs text-ink-mute">{item.detail}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-teal/25 bg-teal/[0.07] p-6">
+              <h3 className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-teal">
+                <Sparkle width={13} height={13} aria-hidden="true" />
+                Currently
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-dim">{profile.searchStatus}</p>
             </div>
           </div>
         </div>

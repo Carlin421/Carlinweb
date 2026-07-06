@@ -11,16 +11,16 @@ type ButtonLinkProps = {
   ariaLabel?: string;
   icon?: ReactNode;
   iconPosition?: "left" | "right";
+  className?: string;
 };
 
 const variants = {
   primary:
-    "bg-warm-text text-warm-surface shadow-sm hover:bg-cool-accentDark focus-visible:ring-cool-accent",
+    "bg-accent text-accent-ink shadow-card hover:shadow-lift hover:brightness-105 border border-transparent",
   secondary:
-    "border border-warm-border bg-warm-surface text-warm-text shadow-sm hover:border-cool-accent hover:bg-cool-accentSoft hover:text-cool-accentDark focus-visible:ring-cool-accent",
-  ghost:
-    "text-warm-secondary hover:bg-warm-surfaceMuted hover:text-warm-text focus-visible:ring-cool-accent",
-};
+    "border border-line-strong bg-surface/70 text-ink hover:border-accent/60 hover:bg-surface",
+  ghost: "border border-transparent text-accent hover:text-ink px-2",
+} as const;
 
 export function ButtonLink({
   href,
@@ -30,38 +30,48 @@ export function ButtonLink({
   ariaLabel,
   icon,
   iconPosition = "right",
+  className,
 }: ButtonLinkProps) {
-  const className = cn(
-    "group inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-warm-background",
+  const classes = cn(
+    "group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium no-underline",
+    "transition-all duration-300 ease-out-expo hover:-translate-y-0.5",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base",
     variants[variant],
+    className
   );
 
   const content = (
     <>
-      {icon && iconPosition === "left" ? (
-        <span className="h-4 w-4 transition duration-200 group-hover:-translate-x-0.5" aria-hidden="true">
+      {icon && iconPosition === "left" && (
+        <span className="transition-transform duration-300 group-hover:-translate-x-0.5">
           {icon}
         </span>
-      ) : null}
-      <span>{children}</span>
-      {icon && iconPosition === "right" ? (
-        <span className="h-4 w-4 transition duration-200 group-hover:translate-x-0.5" aria-hidden="true">
+      )}
+      {children}
+      {icon && iconPosition === "right" && (
+        <span className="transition-transform duration-300 group-hover:translate-x-0.5">
           {icon}
         </span>
-      ) : null}
+      )}
     </>
   );
 
   if (external) {
     return (
-      <a className={className} href={href} target="_blank" rel="noopener noreferrer" aria-label={ariaLabel}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={ariaLabel}
+        className={classes}
+      >
         {content}
       </a>
     );
   }
 
   return (
-    <Link className={className} href={href} aria-label={ariaLabel}>
+    <Link href={href} aria-label={ariaLabel} className={classes}>
       {content}
     </Link>
   );
