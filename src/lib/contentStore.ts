@@ -60,6 +60,7 @@ function mergeContent(stored: StoredContent): SiteContent {
         : defaultContent.profile,
     projects: Array.isArray(stored.projects) ? stored.projects : defaultContent.projects,
     experience: Array.isArray(stored.experience) ? stored.experience : defaultContent.experience,
+    honors: Array.isArray(stored.honors) ? stored.honors : defaultContent.honors,
     skills: Array.isArray(stored.skills) ? stored.skills : defaultContent.skills,
     additionalWork: Array.isArray(stored.additionalWork)
       ? stored.additionalWork

@@ -1,5 +1,6 @@
 import { getDict, type Locale, pick } from "@/lib/i18n";
 import type { ExperienceItem } from "@/lib/siteContent";
+import { cn } from "@/lib/utils";
 
 import { SectionHeading } from "./SectionHeading";
 
@@ -24,8 +25,18 @@ export function Experience({ experience, locale }: ExperienceProps) {
           {experience.map((item, index) => (
             <article
               key={index}
-              className="group grid gap-x-8 gap-y-5 border-b border-line py-8 md:grid-cols-12 md:py-10"
+              className={cn(
+                "group grid gap-x-8 gap-y-5 border-b border-line py-8 md:grid-cols-12 md:py-10",
+                item.featured && "relative"
+              )}
             >
+              {item.featured && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-y-0 -left-4 w-0.5 bg-accent md:-left-6"
+                />
+              )}
+
               {/* Left rail: index + date */}
               <div className="md:col-span-3">
                 <p className="flex items-baseline gap-3">
@@ -40,8 +51,13 @@ export function Experience({ experience, locale }: ExperienceProps) {
 
               {/* Right: role + detail */}
               <div className="md:col-span-9">
-                <h3 className="font-display text-2xl font-medium tracking-tight text-ink md:text-3xl">
+                <h3 className="flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-2xl font-medium tracking-tight text-ink md:text-3xl">
                   {pick(item.role, locale)}
+                  {item.featured && (
+                    <span className="rounded-sm border border-accent px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-accent">
+                      Startup
+                    </span>
+                  )}
                 </h3>
                 <p className="mt-1.5 text-sm text-ink-dim">
                   <span className="font-medium text-accent">{item.company}</span>

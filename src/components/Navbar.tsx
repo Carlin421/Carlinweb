@@ -8,7 +8,6 @@ import type { Socials } from "@/lib/siteContent";
 import { cn } from "@/lib/utils";
 
 import { LanguageToggle } from "./LanguageToggle";
-import { ThemeToggle } from "./ThemeToggle";
 import { Github, Linkedin, Menu, X } from "./icons";
 
 type NavbarProps = {
@@ -18,15 +17,16 @@ type NavbarProps = {
   locale: Locale;
 };
 
-type NavKey = "about" | "work" | "experience" | "skills" | "activities" | "contact";
+type NavKey = "about" | "work" | "experience" | "awards" | "skills" | "activities" | "contact";
 
 const NAV_ITEMS: { href: string; id: string; key: NavKey; num: string }[] = [
   { href: "#about", id: "about", key: "about", num: "01" },
   { href: "#work", id: "work", key: "work", num: "02" },
   { href: "#experience", id: "experience", key: "experience", num: "03" },
-  { href: "#skills", id: "skills", key: "skills", num: "04" },
-  { href: "#activities", id: "activities", key: "activities", num: "05" },
-  { href: "#contact", id: "contact", key: "contact", num: "06" },
+  { href: "#awards", id: "awards", key: "awards", num: "04" },
+  { href: "#skills", id: "skills", key: "skills", num: "05" },
+  { href: "#activities", id: "activities", key: "activities", num: "06" },
+  { href: "#contact", id: "contact", key: "contact", num: "07" },
 ];
 
 export function Navbar({ name, socials, resume, locale }: NavbarProps) {
@@ -144,7 +144,6 @@ export function Navbar({ name, socials, resume, locale }: NavbarProps) {
 
           <div className="flex items-center gap-2.5">
             <LanguageToggle locale={locale} />
-            <ThemeToggle />
             <a
               href={resume}
               target="_blank"

@@ -3,67 +3,54 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   Swiss/International-style tokens. Light is the primary palette: warm white,
-   near-black ink, a single vermillion accent, hairline rules, flat surfaces.
-   Dark is a tuned secondary. RGB triplets so Tailwind alpha modifiers work.
-   The no-flash script in layout.tsx sets data-theme before first paint.
+   Light-only editorial palette. Warm paper base, rich near-black ink, a single
+   vermillion accent, hairline rules. RGB triplets so Tailwind alpha modifiers
+   (bg-accent/10) work. No dark theme — one considered palette, tuned for depth.
 --------------------------------------------------------------------------- */
-:root,
-[data-theme="light"] {
+:root {
   color-scheme: light;
 
-  --c-bg: 251 250 247; /* #FBFAF7 warm white */
-  --c-bg-2: 244 242 236;
-  --c-surface: 255 255 255;
-  --c-surface-2: 246 244 239;
-  --c-ink: 23 21 16; /* #171510 near-black */
-  --c-ink-dim: 84 80 72;
-  --c-ink-mute: 110 104 94; /* #6E685E — AA (>=4.5:1) on bg and surface-2 */
-  --c-line: 226 222 213; /* hairline */
-  --c-line-strong: 199 193 181;
-  --c-accent: 214 56 30; /* #D6381E vermillion */
-  --c-accent-ink: 255 255 255; /* text on the accent fill */
+  --c-bg: 250 248 243; /* #FAF8F3 warm paper */
+  --c-bg-2: 244 241 233;
+  --c-surface: 255 254 251;
+  --c-surface-2: 245 242 234;
+  --c-ink: 26 23 18; /* #1A1712 rich near-black */
+  --c-ink-dim: 78 72 63;
+  --c-ink-mute: 120 112 100; /* #786C64 — AA (>=4.5:1) on bg + surface-2 */
+  --c-line: 227 221 210; /* hairline */
+  --c-line-strong: 201 193 179;
+  --c-accent: 202 51 28; /* #CA331C refined vermillion */
+  --c-accent-ink: 255 253 250; /* text on the accent fill */
 
-  --shadow-card: 0 1px 0 rgb(23 21 16 / 0.04);
-  --shadow-lift: 0 20px 48px -24px rgb(23 21 16 / 0.28);
-}
-
-[data-theme="dark"] {
-  color-scheme: dark;
-
-  --c-bg: 18 17 14; /* #12110E near-black warm */
-  --c-bg-2: 24 22 18;
-  --c-surface: 28 26 21;
-  --c-surface-2: 36 33 27;
-  --c-ink: 243 240 232; /* #F3F0E8 warm cream */
-  --c-ink-dim: 176 169 155;
-  --c-ink-mute: 152 144 130; /* #988E82 — AA (>=4.5:1) on bg and surface-2 */
-  --c-line: 46 42 34;
-  --c-line-strong: 70 63 51;
-  --c-accent: 255 90 56; /* #FF5A38 brighter vermillion */
-  --c-accent-ink: 20 15 11;
-
-  --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3);
-  --shadow-lift: 0 24px 60px -28px rgb(0 0 0 / 0.7);
+  /* Real, soft shadows for gentle depth on light. */
+  --shadow-card: 0 1px 2px rgb(26 23 18 / 0.04), 0 12px 28px -18px rgb(26 23 18 / 0.14);
+  --shadow-lift: 0 2px 4px rgb(26 23 18 / 0.05), 0 28px 60px -28px rgb(26 23 18 / 0.24);
 }
 
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 88px;
-  /* Tabular figures everywhere — the Swiss numbering system stays aligned. */
+  /* Tabular figures everywhere — the numbering system stays aligned. */
   font-variant-numeric: tabular-nums;
 }
 
 body {
   min-height: 100vh;
   background-color: rgb(var(--c-bg));
+  /* A whisper of blueprint grid + a soft top light, for crafted depth. */
+  background-image:
+    radial-gradient(1200px 480px at 50% -280px, rgb(var(--c-accent) / 0.04), transparent 70%),
+    linear-gradient(rgb(var(--c-ink) / 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--c-ink) / 0.018) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    32px 32px,
+    32px 32px;
+  background-attachment: fixed, fixed, fixed;
   color: rgb(var(--c-ink));
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
 }
 
 ::selection {
@@ -100,7 +87,7 @@ body {
 }
 
 @layer utilities {
-  /* The recurring Swiss element: a hairline rule the full width of its box. */
+  /* Hairline rule spanning its box. */
   .rule {
     height: 1px;
     background: rgb(var(--c-line));
@@ -114,9 +101,29 @@ body {
     text-transform: uppercase;
   }
 
-  /* Big editorial display balance. */
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Copper→ink gradient text for a designed headline accent. */
+  .text-accent-gradient {
+    background: linear-gradient(
+      100deg,
+      rgb(var(--c-accent)) 0%,
+      rgb(var(--c-accent) / 0.75) 60%,
+      rgb(var(--c-ink)) 140%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Faint blueprint-grid fill for panels/placeholders. */
+  .bg-blueprint {
+    background-image:
+      linear-gradient(rgb(var(--c-ink) / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--c-ink) / 0.045) 1px, transparent 1px);
+    background-size: 26px 26px;
   }
 }
 

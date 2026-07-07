@@ -15,7 +15,7 @@ export function AdditionalWork({ items, locale }: AdditionalWorkProps) {
     <section id="activities" className="scroll-mt-20">
       <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-28">
         <SectionHeading
-          index="05"
+          index="06"
           eyebrow={dict.activities.eyebrow}
           title={dict.activities.title}
           description={dict.activities.description}

@@ -1,5 +1,6 @@
 import { About } from "@/components/About";
 import { AdditionalWork } from "@/components/AdditionalWork";
+import { Awards } from "@/components/Awards";
 import { Contact } from "@/components/Contact";
 import { Experience } from "@/components/Experience";
 import { Footer } from "@/components/Footer";
@@ -42,6 +43,7 @@ export default async function HomePage() {
           socials={socials}
           projectCount={content.projects.length}
           experienceCount={content.experience.length}
+          honorsCount={content.honors.length}
           locale={locale}
         />
         <Reveal>
@@ -52,6 +54,9 @@ export default async function HomePage() {
         </Reveal>
         <Reveal>
           <Experience experience={content.experience} locale={locale} />
+        </Reveal>
+        <Reveal>
+          <Awards honors={content.honors} locale={locale} />
         </Reveal>
         <Reveal>
           <Skills skills={content.skills} locale={locale} />

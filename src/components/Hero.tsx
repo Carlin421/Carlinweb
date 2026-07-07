@@ -11,27 +11,36 @@ type HeroProps = {
   socials: Socials;
   projectCount: number;
   experienceCount: number;
+  honorsCount: number;
   locale: Locale;
 };
 
-export function Hero({ profile, socials, projectCount, experienceCount, locale }: HeroProps) {
+export function Hero({
+  profile,
+  socials,
+  projectCount,
+  experienceCount,
+  honorsCount,
+  locale,
+}: HeroProps) {
   const dict = getDict(locale);
   const education = profile.education[0];
-  const title = pick(profile.title, locale);
-  const roleLine = title.split("|")[0]?.trim() || title;
+  const tagline = pick(profile.tagline, locale) || pick(profile.title, locale).split("|")[0]?.trim();
 
   const stats = [
     { label: dict.hero.statsProjects, value: String(projectCount).padStart(2, "0") },
-    { label: dict.hero.statsInternships, value: String(experienceCount).padStart(2, "0") },
+    { label: dict.hero.statsRoles, value: String(experienceCount).padStart(2, "0") },
+    { label: dict.hero.statsAwards, value: String(honorsCount).padStart(2, "0") },
   ];
 
   return (
     <section id="top" className="relative">
       <div className="mx-auto max-w-6xl px-6 pb-14 pt-32 md:px-8 md:pt-40">
-        {/* Availability line */}
-        <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-dim">
+        {/* Availability badge */}
+        <div className="inline-flex items-center gap-2.5 rounded-full border border-line-strong bg-surface/70 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim shadow-card">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full rounded-full bg-accent motion-safe:animate-status-pulse" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
           </span>
           {pick(profile.availability, locale)}
         </div>
@@ -39,20 +48,17 @@ export function Hero({ profile, socials, projectCount, experienceCount, locale }
         <div className="mt-8 grid items-start gap-x-10 gap-y-12 lg:grid-cols-12">
           {/* Left: identity + statement */}
           <div className="lg:col-span-7">
-            <p className="index-label text-accent">{roleLine}</p>
+            <p className="index-label text-accent">{tagline}</p>
             <h1 className="mt-4 font-display text-6xl font-medium leading-[0.95] tracking-[-0.03em] text-ink sm:text-7xl lg:text-[5.5rem]">
               {profile.name}
+              <span className="text-accent">.</span>
             </h1>
             <p className="mt-8 max-w-xl text-pretty text-lg leading-relaxed text-ink-dim md:text-xl">
               {pick(profile.shortIntro, locale)}
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <ButtonLink
-                href="#work"
-                variant="primary"
-                icon={<ArrowRight width={16} height={16} />}
-              >
+              <ButtonLink href="#work" variant="primary" icon={<ArrowRight width={16} height={16} />}>
                 {dict.hero.viewWork}
               </ButtonLink>
               <ButtonLink
@@ -97,19 +103,21 @@ export function Hero({ profile, socials, projectCount, experienceCount, locale }
         </div>
       </div>
 
-      {/* Metadata strip: two peer stats on one scale, education as its own row. */}
+      {/* Proof strip: three peer stats + the current program. */}
       <div className="mx-auto max-w-6xl px-6 pb-16 md:px-8">
         <div className="rule" />
-        <dl className="grid sm:grid-cols-2">
+        <dl className="grid grid-cols-3">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
               className={`flex flex-col gap-1 py-6 sm:px-6 ${
-                i > 0 ? "border-t border-line sm:border-l sm:border-t-0" : "sm:pl-0"
+                i > 0 ? "border-l border-line" : "sm:pl-0"
               }`}
             >
               <dt className="order-2 index-label text-ink-mute">{stat.label}</dt>
-              <dd className="order-1 font-display text-3xl font-medium text-ink">{stat.value}</dd>
+              <dd className="order-1 font-display text-2xl font-medium text-ink sm:text-3xl">
+                {stat.value}
+              </dd>
             </div>
           ))}
         </dl>

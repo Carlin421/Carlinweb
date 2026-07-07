@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 import { ActivitiesEditor } from "./ActivitiesEditor";
 import { ExperienceEditor } from "./ExperienceEditor";
+import { HonorsEditor } from "./HonorsEditor";
 import { ProfileEditor } from "./ProfileEditor";
 import { ProjectsEditor } from "./ProjectsEditor";
 import { ResumeEditor } from "./ResumeEditor";
@@ -19,6 +20,7 @@ const TABS = [
   { id: "profile", label: "Profile" },
   { id: "projects", label: "Projects" },
   { id: "experience", label: "Experience" },
+  { id: "awards", label: "Awards" },
   { id: "skills", label: "Skills" },
   { id: "activities", label: "Activities" },
   { id: "resume", label: "Résumé" },
@@ -310,6 +312,13 @@ function DashboardShell({ initialContent, imageMap }: AdminDashboardProps) {
               <ExperienceEditor
                 items={content.experience}
                 onChange={(experience) => setContent((c) => ({ ...c, experience }))}
+                locale={adminLocale}
+              />
+            )}
+            {tab === "awards" && (
+              <HonorsEditor
+                honors={content.honors ?? []}
+                onChange={(honors) => setContent((c) => ({ ...c, honors }))}
                 locale={adminLocale}
               />
             )}

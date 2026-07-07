@@ -15,7 +15,7 @@ export function Skills({ skills, locale }: SkillsProps) {
     <section id="skills" className="scroll-mt-20">
       <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-28">
         <SectionHeading
-          index="04"
+          index="05"
           eyebrow={dict.skills.eyebrow}
           title={dict.skills.title}
           description={dict.skills.description}

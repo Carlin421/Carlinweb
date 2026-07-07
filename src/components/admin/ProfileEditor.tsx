@@ -61,7 +61,9 @@ export function ProfileEditor({
   };
 
   const addEducation = () =>
-    onChange({ education: [...profile.education, { school: "", degree: "", detail: "" }] });
+    onChange({
+      education: [...profile.education, { school: "", degree: "", detail: "", notes: [] }],
+    });
 
   return (
     <div className="space-y-6">
@@ -72,6 +74,13 @@ export function ProfileEditor({
           value={profile.title}
           onChange={(title) => onChange({ title })}
           locale={locale}
+        />
+        <LocalizedInput
+          label="Tagline"
+          value={profile.tagline ?? ""}
+          onChange={(tagline) => onChange({ tagline })}
+          locale={locale}
+          hint="One-line positioning shown under your name."
         />
         <div className="grid gap-4 md:grid-cols-2">
           <LocalizedInput
@@ -148,6 +157,12 @@ export function ProfileEditor({
           value={profile.email}
           onChange={(v) => onChange({ email: v })}
           hint="Leave as YOUR_EMAIL_HERE to hide the email button on the site."
+        />
+        <InputField
+          label="Phone"
+          mono
+          value={profile.phone ?? ""}
+          onChange={(v) => onChange({ phone: v })}
         />
         <InputField
           label="GitHub URL"
@@ -239,6 +254,13 @@ export function ProfileEditor({
               onChange={(detail) => onChange({ education: updateItem(profile.education, i, { detail }) })}
               locale={locale}
             />
+            <LocalizedListEditor
+              label="Notes (scholarship, GPA, coursework…)"
+              items={entry.notes ?? []}
+              onChange={(notes) => onChange({ education: updateItem(profile.education, i, { notes }) })}
+              locale={locale}
+              addLabel="Add note"
+            />
           </div>
         ))}
         <button type="button" onClick={addEducation} className={addButtonClass}>
@@ -253,6 +275,30 @@ export function ProfileEditor({
           onChange={(focusAreas) => onChange({ focusAreas })}
           locale={locale}
           addLabel="Add focus area"
+        />
+      </SectionCard>
+
+      <SectionCard title="Languages, certifications & interests">
+        <LocalizedListEditor
+          label="Languages"
+          items={profile.languages ?? []}
+          onChange={(languages) => onChange({ languages })}
+          locale={locale}
+          addLabel="Add language"
+        />
+        <LocalizedListEditor
+          label="Certifications"
+          items={profile.certifications ?? []}
+          onChange={(certifications) => onChange({ certifications })}
+          locale={locale}
+          addLabel="Add certification"
+        />
+        <LocalizedListEditor
+          label="Interests"
+          items={profile.interests ?? []}
+          onChange={(interests) => onChange({ interests })}
+          locale={locale}
+          addLabel="Add interest"
         />
       </SectionCard>
 

@@ -82,16 +82,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#12110E" },
-    { media: "(prefers-color-scheme: light)", color: "#FBFAF7" },
-  ],
-  colorScheme: "light dark",
+  themeColor: "#FAF8F3",
+  colorScheme: "light",
 };
-
-// Runs before paint so the persisted (or system) theme never flashes.
-// Light is the primary palette; system preference is honored on first visit.
-const themeInitScript = `(function(){var d=document.documentElement,t;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="light"&&t!=="dark"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.dataset.theme=t})()`;
 
 type RootLayoutProps = {
   children: ReactNode;
@@ -120,11 +113,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     <html
       lang={htmlLang(locale)}
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
-      suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
       <body className="bg-base font-sans text-ink">
         {children}
         <script

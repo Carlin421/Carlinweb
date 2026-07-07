@@ -1,5 +1,6 @@
 import { additionalWork } from "@/data/additionalWork";
 import { experience } from "@/data/experience";
+import { honors } from "@/data/honors";
 import { focusAreas, profile as profileDefaults } from "@/data/profile";
 import { projects } from "@/data/projects";
 import { skills } from "@/data/skills";
@@ -13,17 +14,22 @@ export type Education = {
   school: Localized;
   degree: Localized;
   detail: Localized;
+  /** Bullet notes: scholarship, GPA, awards, coursework. */
+  notes: Localized[];
 };
 
 export type Profile = {
   name: string;
   title: Localized;
+  /** One-line positioning statement shown under the name. */
+  tagline: Localized;
   shortIntro: Localized;
   searchStatus: Localized;
   /** Short text shown in the availability badge. */
   availability: Localized;
   location: Localized;
   email: string;
+  phone: string;
   github: string;
   linkedin: string;
   /** Path or URL for the resume PDF. Defaults to the committed /resume.pdf. */
@@ -33,6 +39,16 @@ export type Profile = {
   about: Localized[];
   education: Education[];
   focusAreas: Localized[];
+  languages: Localized[];
+  certifications: Localized[];
+  interests: Localized[];
+};
+
+export type Honor = {
+  title: Localized;
+  /** Placement / distinction, e.g. "1st Place" or "National Award". */
+  detail: Localized;
+  year: string;
 };
 
 export type Project = {
@@ -56,6 +72,8 @@ export type ExperienceItem = {
   date: Localized;
   description: Localized;
   bullets: Localized[];
+  /** Highlight this entry (e.g. a founded startup). */
+  featured?: boolean;
 };
 
 export type SkillGroup = {
@@ -80,6 +98,7 @@ export type SiteContent = {
   profile: Profile;
   projects: Project[];
   experience: ExperienceItem[];
+  honors: Honor[];
   skills: SkillGroup[];
   additionalWork: AdditionalWorkItem[];
   /** ISO timestamp stamped by the content store on save. */
@@ -90,6 +109,7 @@ export const defaultContent: SiteContent = {
   profile: { ...profileDefaults, focusAreas },
   projects,
   experience,
+  honors,
   skills,
   additionalWork,
 };

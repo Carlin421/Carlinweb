@@ -17,6 +17,13 @@ export function Contact({ profile, socials, locale }: ContactProps) {
     socials.email
       ? { label: dict.contact.dirEmail, value: socials.email, href: `mailto:${socials.email}` }
       : null,
+    profile.phone
+      ? {
+          label: dict.contact.dirPhone,
+          value: profile.phone,
+          href: `tel:${profile.phone.replace(/\s+/g, "")}`,
+        }
+      : null,
     socials.github
       ? {
           label: dict.contact.dirGithub,
@@ -39,7 +46,7 @@ export function Contact({ profile, socials, locale }: ContactProps) {
       <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-28">
         <div className="rule" />
         <p className="index-label mt-4 text-accent">
-          06 <span className="text-ink-mute">/ {dict.contact.eyebrow}</span>
+          07 <span className="text-ink-mute">/ {dict.contact.eyebrow}</span>
         </p>
 
         <div className="mt-8 grid gap-x-10 gap-y-12 md:grid-cols-12">

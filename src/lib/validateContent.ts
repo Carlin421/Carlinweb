@@ -3,6 +3,7 @@ import type {
   AdditionalWorkItem,
   Education,
   ExperienceItem,
+  Honor,
   Profile,
   Project,
   SiteContent,
@@ -13,6 +14,9 @@ import type {
 const MAX_STRING = 5000;
 const MAX_PROJECTS = 100;
 const MAX_LIST = 200;
+const MAX_HONORS = 50;
+// A year is a short plain string like "2024"; keep it tight.
+const MAX_SHORT_STRING = 120;
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 
 export type ValidateResult =
@@ -133,12 +137,13 @@ function readList<T>(
 function readEducation(value: unknown, path: string, errors: string[]): Education {
   if (!isRecord(value)) {
     errors.push(`${path} must be an object.`);
-    return { school: "", degree: "", detail: "" };
+    return { school: "", degree: "", detail: "", notes: [] };
   }
   return {
     school: readLocalized(value.school, `${path}.school`, errors),
     degree: readLocalized(value.degree, `${path}.degree`, errors),
     detail: readLocalized(value.detail, `${path}.detail`, errors),
+    notes: readLocalizedArray(value.notes, `${path}.notes`, errors),
   };
 }
 
@@ -148,11 +153,13 @@ function readProfile(value: unknown, errors: string[]): Profile {
   return {
     name: readString(record.name, "profile.name", errors, true),
     title: readLocalized(record.title, "profile.title", errors, true),
+    tagline: readLocalized(record.tagline, "profile.tagline", errors),
     shortIntro: readLocalized(record.shortIntro, "profile.shortIntro", errors),
     searchStatus: readLocalized(record.searchStatus, "profile.searchStatus", errors),
     availability: readLocalized(record.availability, "profile.availability", errors),
     location: readLocalized(record.location, "profile.location", errors),
     email: readString(record.email, "profile.email", errors),
+    phone: readString(record.phone, "profile.phone", errors),
     github: readString(record.github, "profile.github", errors),
     linkedin: readString(record.linkedin, "profile.linkedin", errors),
     resume: readString(record.resume, "profile.resume", errors),
@@ -160,6 +167,9 @@ function readProfile(value: unknown, errors: string[]): Profile {
     about: readLocalizedArray(record.about, "profile.about", errors),
     education: readList(record.education, "profile.education", errors, MAX_LIST, readEducation),
     focusAreas: readLocalizedArray(record.focusAreas, "profile.focusAreas", errors),
+    languages: readLocalizedArray(record.languages, "profile.languages", errors),
+    certifications: readLocalizedArray(record.certifications, "profile.certifications", errors),
+    interests: readLocalizedArray(record.interests, "profile.interests", errors),
   };
 }
 
@@ -217,13 +227,33 @@ function readProject(value: unknown, path: string, errors: string[]): Project {
 function readExperience(value: unknown, path: string, errors: string[]): ExperienceItem {
   if (!isRecord(value)) errors.push(`${path} must be an object.`);
   const record = isRecord(value) ? value : {};
-  return {
+  if (record.featured !== undefined && typeof record.featured !== "boolean") {
+    errors.push(`${path}.featured must be a boolean.`);
+  }
+  const item: ExperienceItem = {
     role: readLocalized(record.role, `${path}.role`, errors),
     company: readString(record.company, `${path}.company`, errors),
     location: readLocalized(record.location, `${path}.location`, errors),
     date: readLocalized(record.date, `${path}.date`, errors),
     description: readLocalized(record.description, `${path}.description`, errors),
     bullets: readLocalizedArray(record.bullets, `${path}.bullets`, errors),
+  };
+  // Experience featured is not mutually exclusive — coerce and omit when false.
+  if (record.featured === true) item.featured = true;
+  return item;
+}
+
+function readHonor(value: unknown, path: string, errors: string[]): Honor {
+  if (!isRecord(value)) errors.push(`${path} must be an object.`);
+  const record = isRecord(value) ? value : {};
+  const year = readString(record.year, `${path}.year`, errors);
+  if (year.length > MAX_SHORT_STRING) {
+    errors.push(`${path}.year is longer than ${MAX_SHORT_STRING} characters.`);
+  }
+  return {
+    title: readLocalized(record.title, `${path}.title`, errors, true),
+    detail: readLocalized(record.detail, `${path}.detail`, errors),
+    year: year.slice(0, MAX_SHORT_STRING),
   };
 }
 
@@ -262,6 +292,7 @@ export function validateSiteContent(input: unknown): ValidateResult {
   const profile = readProfile(input.profile, errors);
   const projects = readList(input.projects, "projects", errors, MAX_PROJECTS, readProject);
   const experience = readList(input.experience, "experience", errors, MAX_LIST, readExperience);
+  const honors = readList(input.honors, "honors", errors, MAX_HONORS, readHonor);
   const skills = readList(input.skills, "skills", errors, MAX_LIST, readSkillGroup);
   const additionalWork = readList(
     input.additionalWork,
@@ -288,5 +319,5 @@ export function validateSiteContent(input: unknown): ValidateResult {
   if (errors.length > 0) {
     return { ok: false, errors };
   }
-  return { ok: true, content: { profile, projects, experience, skills, additionalWork } };
+  return { ok: true, content: { profile, projects, experience, honors, skills, additionalWork } };
 }
